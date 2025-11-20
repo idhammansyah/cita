@@ -7,18 +7,20 @@ use App\Http\Controllers\AuthController\RoleController as role;
 use App\Http\Controllers\MenuController\Menu;
 use App\Http\Controllers\ModuleController\Module as module;
 use App\Http\Controllers\ReimbursementController\Reimbursement as reimburse;
+use App\Http\Controllers\UserManagementController\UserController;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewReimbursementNotification;
-use App\Models\Reimbursement\ReimbursementEmployee; // Sesuaikan namespace
-use App\Models\User; // Sesuaikan namespace
+use App\Models\Reimbursement\ReimbursementEmployee;
 
 // Route::get('/', [AuthController::class, 'v_login']);
 Route::get('/login', [AuthController::class, 'v_login'])->name('login');
 Route::post('/attempt-login', [AuthController::class, 'attemptlogin'])->name('attemptlogin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function ()
+
+// Route::middleware('auth')->group(function ()
+Route::middleware(['auth', 'module.access'])->group(function ()
 {
   Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -52,10 +54,11 @@ Route::middleware('auth')->group(function ()
   Route::put('/update-module/{id}', [module::class, 'update'])->name('modules.update');
   Route::delete('/delete-module/{id}', [module::class, 'destroy'])->name('modules.destroy');
 
-  // Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
-  // Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
-  // Route::patch('/users/{id}', [UserController::class, 'destroy'])->name('users.disable');
-  // Route::post('/users', [UserController::class, 'store'])->name('users.store');
+  Route::get('/users', [UserController::class, 'index'])->name('users');
+  Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+  Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+  Route::patch('/users/{id}', [UserController::class, 'destroy'])->name('users.disable');
+  Route::post('/users', [UserController::class, 'store'])->name('users.store');
 
   // reimbursement
   Route::get('/reimburse-menu', [reimburse::class, 'index'])->name('reimbursement-menu');
@@ -81,11 +84,11 @@ Route::middleware('auth')->group(function ()
     $testEmailTo = 'tujuan_test@mailtrap.io';
 
     try {
-        Mail::to($testEmailTo)->send(new NewReimbursementNotification($reimbursement));
-        return "Email sent synchronously! Check your Mailtrap inbox.";
+      Mail::to($testEmailTo)->send(new NewReimbursementNotification($reimbursement));
+      return "Email sent synchronously! Check your Mailtrap inbox.";
     } catch (\Exception $e) {
-        // Ini akan menampilkan error jika pengiriman langsung gagal
-        return "Email sending failed synchronously: " . $e->getMessage();
+      // Ini akan menampilkan error jika pengiriman langsung gagal
+      return "Email sending failed synchronously: " . $e->getMessage();
     }
-});
+  });
 });

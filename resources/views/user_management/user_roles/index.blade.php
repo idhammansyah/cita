@@ -4,7 +4,10 @@
 
 @section('content')
 
-{!! renderBreadcrumb() !!}
+<div class="pagetitle">
+  <h1>User Roles</h1>
+  {!! renderBreadcrumb() !!}
+</div>
 
 <section class="dashboard">
   <div class="row">
@@ -23,7 +26,7 @@
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Role Name</th>
+                <th scope="col">Full Name</th>
                 <th scope="col">Action</th>
               </tr>
             </thead>

@@ -8,39 +8,70 @@ use App\Models\Reimbursement\ReimbursementLog;
 if (!function_exists('renderBreadcrumb')) {
     function renderBreadcrumb()
     {
-        $currentUrl = Request::path(); // Ambil URL saat ini
-        $menu = DB::table('menus')->where('url_link', $currentUrl)->first();
+        $current = Request::path();
+        $fullUrl = url()->current();
+        $withSlash = "/" . ltrim($current, "/");
 
+        // 1. Coba cari menu berdasarkan 3 kemungkinan URL
+        $menu = DB::table('menus')
+            ->where('url_link', $current)
+            ->orWhere('url_link', $withSlash)
+            ->orWhere('url_link', $fullUrl)
+            ->first();
+
+        // 2. Fallback: cari LIKE (misal /user/edit/5)
         if (!$menu) {
-            return ''; // Jika menu tidak ditemukan, tidak tampilkan breadcrumb
+            $menu = DB::table('menus')
+                ->where('url_link', 'LIKE', $current . '%')
+                ->orWhere('url_link', 'LIKE', $withSlash . '%')
+                ->first();
+        }
+
+        // Jika tetap tidak ditemukan → kosongkan breadcrumb
+        if (!$menu) {
+            return '';
         }
 
         $breadcrumbs = [];
+        $visited = [];
 
+        // 3. Loop parent
         while ($menu) {
+
+            if (in_array($menu->id_menus, $visited)) {
+                break; // cegah infinite loop
+            }
+            $visited[] = $menu->id_menus;
+
             $breadcrumbs[] = [
                 'nama_menu' => $menu->nama_menu,
-                'url_link' => ($menu->id_parent == 0) ? url($menu->url_link) : null
+                'url_link' => $menu->url_link ? url($menu->url_link) : null
             ];
 
-            if ($menu->id_parent != 0) {
-                $menu = DB::table('menus')->where('id_menus', $menu->id_parent)->first();
-            } else {
-                $menu = null;
+            // STOP jika root
+            if ($menu->id_parent == 0 || $menu->id_parent == $menu->id_menus) {
+                break;
             }
+
+            $menu = DB::table('menus')->where('id_menus', $menu->id_parent)->first();
         }
 
+        // Balikkan (root → child)
         $breadcrumbs = array_reverse($breadcrumbs);
 
-        // Generate HTML breadcrumb
+        // 4. Render HTML
         $html = '<nav><ol class="breadcrumb">';
         $html .= '<li class="breadcrumb-item"><a href="' . url('dashboard') . '">Dashboard</a></li>';
 
-        foreach ($breadcrumbs as $breadcrumb) {
-            if ($breadcrumb['url_link']) {
-                $html .= '<li class="breadcrumb-item"><a href="' . $breadcrumb['url_link'] . '">' . e($breadcrumb['nama_menu']) . '</a></li>';
+        foreach ($breadcrumbs as $i => $crumb) {
+            $last = ($i === array_key_last($breadcrumbs));
+
+            if ($crumb['url_link'] && !$last) {
+                $html .= '<li class="breadcrumb-item"><a href="' . $crumb['url_link'] . '">'
+                        . e($crumb['nama_menu']) . '</a></li>';
             } else {
-                $html .= '<li class="breadcrumb-item active">' . e($breadcrumb['nama_menu']) . '</li>';
+                $html .= '<li class="breadcrumb-item active" aria-current="page">'
+                        . e($crumb['nama_menu']) . '</li>';
             }
         }
 
@@ -110,3 +141,50 @@ function logReimbursementActivity($reimbursement_id, $action, $desc = null)
       'description' => $desc,
     ]);
 }
+
+if (!function_exists('currentModuleId')) {
+    function currentModuleId()
+    {
+        $url = '/' . ltrim(Request::path(), '/');  // pastikan format "/dashboard"
+
+        $menu = DB::table('menus')
+            ->where('url_link', $url)
+            ->where('is_active', 1)
+            ->first();
+
+        return $menu->id_modules ?? null;
+    }
+}
+
+if (!function_exists('canAccess')) {
+    function canAccess($permission)
+    {
+        $user = Auth::user();
+        if (!$user) return false;
+
+        $roleId = $user->role_id ?? null;
+        if (!$roleId) return false;
+
+        // SUPERADMIN
+        if ($roleId == 1) return true;
+
+        $moduleId = currentModuleId();
+        if (!$moduleId) return false;
+
+        $moduleRole = DB::table('module_roles')
+            ->where('id_role', $roleId)
+            ->where('id_module', $moduleId)
+            ->first();
+
+        if (!$moduleRole) return false;
+
+        return match ($permission) {
+            'read'   => $moduleRole->can_read == 1,
+            'create' => $moduleRole->can_create == 1,
+            'update' => $moduleRole->can_update == 1,
+            'delete' => $moduleRole->can_delete == 1,
+            default  => false,
+        };
+    }
+  }
+

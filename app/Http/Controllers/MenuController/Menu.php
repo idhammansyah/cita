@@ -47,6 +47,7 @@ class Menu extends Controller
     ->orderBy('menus.urutan')
     ->get();
 
+
     $menus_raw = DB::table('menus')->where('is_active', 1)->orderBy('id_parent', 'ASC')->orderBy('urutan', 'ASC')->get();
     $modules = DB::table('modules')->get();
     $menuses = DB::table('menus')
@@ -56,14 +57,44 @@ class Menu extends Controller
     ->get();
 
     $all_menus = DB::table('menus')
-            ->where('is_active', 1)
-            ->orderBy('nama_menu')
-            ->get();
+      ->where('is_active', 1)
+      ->orderBy('nama_menu')
+      ->get();
+
+    $permissions = DB::table('roles as r')
+    ->join('module_roles as mr', 'r.id_roles', '=', 'mr.id_role')
+    ->join('modules as m', 'mr.id_module', '=', 'm.id_modules')
+    ->join('menus as mn', 'mn.id_modules', '=', 'm.id_modules')
+    ->leftJoin('menus_kategori as mk', 'mn.id_menu_kategori', '=', 'mk.id_menu_kategori')
+    ->leftJoin('menu_roles as mnr', function($join) {
+        $join->on('mnr.id_menus', '=', 'mn.id_menus')
+             ->on('mnr.id_roles', '=', 'r.id_roles');
+    })
+    ->select(
+        'r.id_roles',
+        'r.nama_roles',
+        'm.id_modules',
+        'm.nama_modules',
+        'mn.id_menus',
+        'mn.nama_menu',
+        'mn.url_link',
+        'mn.class',
+        'mk.nama_kategori',
+        'mr.can_read as module_read',
+        'mr.can_create as module_create',
+        'mr.can_update as module_update',
+        'mr.can_delete as module_delete',
+        DB::raw('CASE WHEN mnr.id_menus IS NOT NULL THEN 1 ELSE 0 END AS menu_active')
+    )
+    ->orderBy('r.id_roles')
+    ->orderBy('m.id_modules')
+    ->orderBy('mn.urutan')
+    ->get();
 
     // Tambahan: ambil semua kategori menu
     $categories = DB::table('menus_kategori')->orderBy('urutan')->get();
 
-    return view('menu_management.index', compact('menus', 'roles', 'menus_raw', 'modules', 'categories', 'all_menus'));
+    return view('menu_management.index', compact('menus', 'roles', 'menus_raw', 'modules', 'categories', 'all_menus', 'permissions'));
   }
 
   public function store(Request $request)
@@ -233,28 +264,30 @@ class Menu extends Controller
 
   public function updateAccess(Request $request)
   {
+    // Validasi
     $validator = Validator::make($request->all(), [
-      'id_role' => 'required|integer',
-      'id_module' => 'required|integer',
-      'access' => 'required|array',
+        'id_role'   => 'required|integer',
+        'id_module' => 'required|integer',
+        'access'    => 'nullable|array', // boleh kosong
     ]);
 
     if ($validator->fails()) {
-      return Redirect::back()->withErrors($validator)->withInput();
+        return Redirect::back()->withErrors($validator)->withInput();
     }
 
-    DB::table('module_roles')
-    ->updateOrInsert(
-      [
-        'id_module' => $request->id_module,
-        'id_role' => $request->id_role,
-      ],
-      [
-        'can_read' => in_array('read', $request->access) ? 1 : 0,
-        'can_create' => in_array('create', $request->access) ? 1 : 0,
-        'can_update' => in_array('update', $request->access) ? 1 : 0,
-        'can_delete' => in_array('delete', $request->access) ? 1 : 0,
-      ]
+    // Set default access ke array kosong jika null
+    $access = $request->input('access', []); // <= FIX PENTING
+
+    DB::table('module_roles')->updateOrInsert([
+      'id_module' => $request->id_module,
+      'id_role'   => $request->id_role,
+    ],
+    [
+      'can_read'   => in_array('read',   $access) ? 1 : 0,
+      'can_create' => in_array('create', $access) ? 1 : 0,
+      'can_update' => in_array('update', $access) ? 1 : 0,
+      'can_delete' => in_array('delete', $access) ? 1 : 0,
+    ]
     );
 
     return redirect()->route('menu-management')->with('success', 'Akses berhasil diperbarui.');

@@ -1,6 +1,6 @@
 /*
 SQLyog Ultimate
-MySQL - 8.0.30 : Database - dms_laravel
+MySQL - 8.0.30 : Database - cita_apps
 *********************************************************************
 */
 
@@ -35,6 +35,26 @@ CREATE TABLE `cache_locks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `cache_locks` */
+
+/*Table structure for table `calon_tamu` */
+
+CREATE TABLE `calon_tamu` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `id_user` int DEFAULT NULL,
+  `nama_tamu` varchar(255) DEFAULT NULL,
+  `nomor_hp` varchar(255) DEFAULT NULL,
+  `hubungan_kerabat` int DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT '1',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `created_by` varchar(10) DEFAULT NULL,
+  `updated_by` varchar(10) DEFAULT NULL,
+  `deleted_by` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `calon_tamu` */
 
 /*Table structure for table `failed_jobs` */
 
@@ -95,27 +115,27 @@ CREATE TABLE `menu_roles` (
 
 /*Data for the table `menu_roles` */
 
-insert  into `menu_roles`(`id_menus`,`id_roles`) values (1,1),(2,1),(3,1),(4,1),(5,3),(5,1),(4,3),(6,1),(6,2),(6,3),(6,4),(7,1),(7,2),(4,2),(1,2),(2,2),(8,1),(10,3),(11,3),(10,1),(11,1),(12,1),(13,1),(13,2),(11,2),(10,2),(14,1),(16,1);
+insert  into `menu_roles`(`id_menus`,`id_roles`) values (1,2),(2,2),(4,2);
 
 /*Table structure for table `menus` */
 
 CREATE TABLE `menus` (
   `id_menus` int NOT NULL AUTO_INCREMENT,
   `id_menu_kategori` int DEFAULT NULL,
+  `id_modules` int DEFAULT NULL,
+  `id_parent` int DEFAULT NULL,
   `nama_menu` varchar(50) DEFAULT NULL,
   `class` varchar(50) DEFAULT NULL,
   `url_link` varchar(50) DEFAULT NULL,
-  `id_modules` int DEFAULT NULL,
-  `posisi` varchar(50) DEFAULT NULL,
-  `id_parent` int DEFAULT NULL,
-  `is_active` int DEFAULT NULL,
+  `posisi` enum('sidebar','navbar') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `is_active` int DEFAULT '0',
   `urutan` int DEFAULT NULL,
   PRIMARY KEY (`id_menus`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `menus` */
 
-insert  into `menus`(`id_menus`,`id_menu_kategori`,`nama_menu`,`class`,`url_link`,`id_modules`,`posisi`,`id_parent`,`is_active`,`urutan`) values (1,1,'Master Settings','bi bi-gear-fill','#',1,'sidebar',0,1,1),(2,1,'User Settings','bi bi-person-circle','user-settings',1,'sidebar',1,1,3),(3,1,'Master User Roles','bi bi-people-fill','user-roles',1,'sidebar',1,1,2),(4,0,'Profiles','bi bi-person','profile',2,'navbar',0,1,1),(5,1,'Dashboard','bi bi-grid','dashboard',1,'sidebar',0,1,0),(6,1,'Master Module','bi bi-journal-plus','master-module',3,'sidebar',1,1,4),(7,1,'Menu Setup','bi bi-menu-button-wide','menu-management',4,'sidebar',1,1,6),(10,2,'Document Menu','bi bi-folder-fill','#',6,'sidebar',0,1,2),(11,2,'Reimbursement','bi bi-cash','reimburse-menu',6,'sidebar',10,0,1),(12,1,'Email Menu','bi bi-envelope-at-fill','email-menu',7,'sidebar',1,0,6),(13,1,'Reimbursement Category','bi bi-wallet2','reimburse-category',8,'sidebar',1,0,7),(14,1,'Menu Category','bi bi-menu-button-wide','menu-categories-setup',9,'sidebar',1,1,5),(15,1,'Dashboard Document','bi bi-folder','dashboard-document',10,'sidebar',10,1,1),(16,1,'Dashboard Document','bi bi-folder','dashboard-document',10,'sidebar',10,1,1);
+insert  into `menus`(`id_menus`,`id_menu_kategori`,`id_modules`,`id_parent`,`nama_menu`,`class`,`url_link`,`posisi`,`is_active`,`urutan`) values (1,1,1,0,'Dashboard','bi bi-house','/dashboard','sidebar',1,0),(2,2,2,0,'Master Settings','bi bi-gear-fill','#','sidebar',1,1),(3,2,2,2,'User Roles','bi bi-person-workspace','/user-roles','sidebar',1,1),(4,2,3,2,'User List','bi bi-person','/users','sidebar',1,2);
 
 /*Table structure for table `menus_kategori` */
 
@@ -123,14 +143,14 @@ CREATE TABLE `menus_kategori` (
   `id_menu_kategori` int NOT NULL AUTO_INCREMENT,
   `nama_kategori` varchar(50) DEFAULT NULL,
   `deskripsi_menu` varchar(50) DEFAULT NULL,
-  `is_active` int DEFAULT NULL,
+  `is_active` int DEFAULT '0',
   `urutan` int DEFAULT NULL,
   PRIMARY KEY (`id_menu_kategori`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `menus_kategori` */
 
-insert  into `menus_kategori`(`id_menu_kategori`,`nama_kategori`,`deskripsi_menu`,`is_active`,`urutan`) values (1,'Master Settings','',1,1),(2,'Document','',1,2),(3,'Recruitment',NULL,0,3);
+insert  into `menus_kategori`(`id_menu_kategori`,`nama_kategori`,`deskripsi_menu`,`is_active`,`urutan`) values (1,'Dashboard','',1,0),(2,'Master Settings',NULL,1,1);
 
 /*Table structure for table `migrations` */
 
@@ -156,11 +176,11 @@ CREATE TABLE `module_roles` (
   `can_update` int DEFAULT '0',
   `can_delete` int DEFAULT '0',
   PRIMARY KEY (`id_module_roles`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `module_roles` */
 
-insert  into `module_roles`(`id_module_roles`,`id_module`,`id_role`,`can_read`,`can_create`,`can_update`,`can_delete`) values (1,1,1,1,1,1,1),(2,2,1,1,1,1,1),(3,1,3,1,1,1,1),(4,3,1,1,1,1,1),(5,1,2,1,1,1,1),(8,6,3,1,1,1,1),(9,6,1,1,1,1,1),(10,7,1,1,1,1,1),(11,8,1,1,1,1,1),(12,8,2,1,1,1,1),(13,6,2,1,1,1,1),(14,9,1,1,1,1,1),(16,10,1,1,0,0,0);
+insert  into `module_roles`(`id_module_roles`,`id_module`,`id_role`,`can_read`,`can_create`,`can_update`,`can_delete`) values (1,1,2,1,0,0,0),(2,2,2,1,0,0,0),(3,3,2,1,0,0,0);
 
 /*Table structure for table `modules` */
 
@@ -168,14 +188,21 @@ CREATE TABLE `modules` (
   `id_modules` int NOT NULL AUTO_INCREMENT,
   `nama_modules` varchar(50) DEFAULT NULL,
   `judul_modules` varchar(50) DEFAULT NULL,
+  `is_deleted` int DEFAULT '0',
   `login` int DEFAULT '0',
   `deskripsi` varchar(300) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `created_by` varchar(50) DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `updated_by` varchar(50) DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `deleted_by` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id_modules`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Data for the table `modules` */
 
-insert  into `modules`(`id_modules`,`nama_modules`,`judul_modules`,`login`,`deskripsi`) values (1,'AuthController/UserController','User Controller',1,'User Control'),(2,'AuthController/ProfileController','Profile Controller',1,'Profile Controller'),(3,'ModuleController/Module','Module Controller',1,'Adding Module Controller'),(4,'MenuController/Menu','Menu Controller',1,'Menu Setup'),(6,'ReimbursementController/Reimbursement','Reimburse',1,'Reimburse for All Staff'),(7,'EmailController/Email','Email Controller',1,'Email Notification'),(9,'MenuController/MenuCategory','Adding Menu Category',1,'Adding menu category before add menu'),(10,'DocumentController/Document','Document Controller',1,'Document Controller for all employee and integrate using NAS Synology');
+insert  into `modules`(`id_modules`,`nama_modules`,`judul_modules`,`is_deleted`,`login`,`deskripsi`,`created_at`,`created_by`,`updated_at`,`updated_by`,`deleted_at`,`deleted_by`) values (1,'Dashboard','Dashboard',0,1,'Dashboard','2025-11-20 15:15:59','Superadmin',NULL,NULL,NULL,NULL),(2,'Master Settings','Master Settings',0,1,'Master Settings','2025-11-20 15:24:51','Superadmin',NULL,NULL,NULL,NULL),(3,'User Settings','User Settings',0,1,'User List','2025-11-20 15:38:15','Superadmin',NULL,NULL,NULL,NULL);
 
 /*Table structure for table `password_reset_tokens` */
 
@@ -188,90 +215,20 @@ CREATE TABLE `password_reset_tokens` (
 
 /*Data for the table `password_reset_tokens` */
 
-/*Table structure for table `reimburse_category` */
-
-CREATE TABLE `reimburse_category` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `category_name` varchar(255) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
-  `limit_per_month` decimal(10,0) DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  `is_deleted` int DEFAULT NULL,
-  `created_by` int DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  `updated_by` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
-
-/*Data for the table `reimburse_category` */
-
-insert  into `reimburse_category`(`id`,`category_name`,`limit_per_month`,`created_at`,`is_deleted`,`created_by`,`updated_at`,`updated_by`) values (1,'Transportasi',500000,'2025-06-17 19:09:21',0,1,NULL,NULL),(2,'Makan',500000,'2025-06-17 19:09:52',0,1,NULL,NULL),(3,'Kesehatan',1000000,'2025-06-17 19:10:10',0,1,NULL,NULL);
-
-/*Table structure for table `reimburse_employee` */
-
-CREATE TABLE `reimburse_employee` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
-  `description` mediumtext CHARACTER SET armscii8 COLLATE armscii8_bin,
-  `id_approval_user` int DEFAULT NULL,
-  `id_user` int DEFAULT NULL,
-  `amount` decimal(10,0) DEFAULT NULL,
-  `id_category_reimburse` int DEFAULT NULL,
-  `status_reimburse` varchar(255) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
-  `submitted_at` datetime DEFAULT NULL,
-  `approved_at` datetime DEFAULT NULL,
-  `bukti_transaksi` varchar(255) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
-  `is_deleted` smallint DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  `created_by` int DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
-  `updated_by` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
-
-/*Data for the table `reimburse_employee` */
-
-/*Table structure for table `reimbursement_logs` */
-
-CREATE TABLE `reimbursement_logs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `reimbursement_id` bigint unsigned NOT NULL,
-  `user_id` bigint unsigned NOT NULL,
-  `action` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-/*Data for the table `reimbursement_logs` */
-
-/*Table structure for table `role_access` */
-
-CREATE TABLE `role_access` (
-  `id_role_access` int NOT NULL AUTO_INCREMENT,
-  `nama_role_access` varchar(50) DEFAULT NULL,
-  `ket_role_access` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id_role_access`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Data for the table `role_access` */
-
-insert  into `role_access`(`id_role_access`,`nama_role_access`,`ket_role_access`) values (1,'all','Boleh Akses Semua Data'),(2,'no','Tidak Boleh Akses Semua Data'),(3,'own','Hanya Data Miliknya Sendiri');
-
 /*Table structure for table `roles` */
 
 CREATE TABLE `roles` (
   `id_roles` int NOT NULL AUTO_INCREMENT,
   `nama_roles` varchar(50) CHARACTER SET armscii8 COLLATE armscii8_bin DEFAULT NULL,
-  `is_deleted` int DEFAULT NULL,
-  `updated_at` datetime DEFAULT NULL,
+  `is_deleted` int DEFAULT '0',
   `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id_roles`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=armscii8 COLLATE=armscii8_bin;
 
 /*Data for the table `roles` */
 
-insert  into `roles`(`id_roles`,`nama_roles`,`is_deleted`,`updated_at`,`created_at`) values (1,'Superadmin',0,'2025-06-17 02:00:50',NULL),(2,'Manager',0,NULL,NULL),(3,'Employee/Staff',0,NULL,NULL),(5,'User',0,'2025-06-17 02:13:17','2025-06-16 14:24:46');
+insert  into `roles`(`id_roles`,`nama_roles`,`is_deleted`,`created_at`,`updated_at`) values (1,'Superadmin',0,'2025-11-20 09:19:57',NULL),(2,'Admin',0,NULL,NULL),(3,'User',0,NULL,NULL);
 
 /*Table structure for table `sessions` */
 
@@ -289,7 +246,7 @@ CREATE TABLE `sessions` (
 
 /*Data for the table `sessions` */
 
-insert  into `sessions`(`id`,`user_id`,`ip_address`,`user_agent`,`payload`,`last_activity`) values ('A7smlyljB1IGk2Z2ltVbgRyfOuOQmBjIkPWGaHFZ',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoibUlqcXFnb3hXWHEzVTh2UWJwUndWdlF0VjNEb1dmMW1xYnVDYUJHNiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzk6Imh0dHA6Ly9kbXNfcHJvZ3JhbS50ZXN0L21lbnUtbWFuYWdlbWVudCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',1763450410);
+insert  into `sessions`(`id`,`user_id`,`ip_address`,`user_agent`,`payload`,`last_activity`) values ('1hxbiX2TjBnxVB5PehqpWK99BrvFlI1i89SEcS3T',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiVU81aVhGazU3VjB0UzZSS3NRNVN4MUViYUJ6TVhNNEdyaTNMVkR0cSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyODoiaHR0cHM6Ly9jaXRhLnRlc3QvdXNlci1yb2xlcyI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjI4OiJodHRwczovL2NpdGEudGVzdC91c2VyLXJvbGVzIjtzOjU6InJvdXRlIjtOO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyO30=',1763626119),('9KUHlzRzQelho0MXBt3pMi1D16wGZS1pnirP0ckH',1,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUHBlbWZsV0N4bWJHeENEV3RVVWxOandTN2pMRDZWaUIzMzVxb1JiMyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyNzoiaHR0cHM6Ly9jaXRhLnRlc3QvZGFzaGJvYXJkIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjM6Imh0dHBzOi8vY2l0YS50ZXN0L3VzZXJzIjtzOjU6InJvdXRlIjtzOjU6InVzZXJzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',1763633249),('tWKO5n92HvlYLyeC0R2nSC0sXf6r9rDJtChZyOaj',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0','YTo2OntzOjY6Il90b2tlbiI7czo0MDoiVTlFVURpdHBvb0pwTWxuSTljZEY4NWZCVnBoSzhtcjQ0WFVTZWxwZyI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyODoiaHR0cHM6Ly9jaXRhLnRlc3QvdXNlci1yb2xlcyI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjIzOiJodHRwczovL2NpdGEudGVzdC9sb2dpbiI7czo1OiJyb3V0ZSI7czo1OiJsb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjE6e2k6MDtzOjc6InN1Y2Nlc3MiO31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7czo3OiJzdWNjZXNzIjtzOjE0OiJMb2dpbiBiZXJoYXNpbCI7fQ==',1763626419),('yPPCwkFxCTUxdzGGBHpGgpzkwG5Tqhuatd03DSZ7',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoieFFEdGJza3dzQUlPaEZCRHpZM1k1dWRGM3FHWVVaVUJ1QnNCMlNZUCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjM6Imh0dHBzOi8vY2l0YS50ZXN0L3VzZXJzIjtzOjU6InJvdXRlIjtzOjU6InVzZXJzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mjt9',1763633245),('zT33kNN5kl3cBwocSOpj3kreHUC7rii1xtUzdFph',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiZFhaNVNpNlVqU0RGV3hITEh5ajNPUVNhYnd0cTkzR2pGYUduY1NUeiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyODoiaHR0cHM6Ly9jaXRhLnRlc3QvdXNlci1yb2xlcyI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjI4OiJodHRwczovL2NpdGEudGVzdC91c2VyLXJvbGVzIjtzOjU6InJvdXRlIjtOO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyO30=',1763625474);
 
 /*Table structure for table `tokenize` */
 
@@ -327,7 +284,7 @@ CREATE TABLE `user_roles` (
 
 /*Data for the table `user_roles` */
 
-insert  into `user_roles`(`id_user`,`id_role`) values (1,1),(2,2),(3,3),(4,4);
+insert  into `user_roles`(`id_user`,`id_role`) values (1,1),(2,2),(3,3),(2,3);
 
 /*Table structure for table `users` */
 
@@ -354,7 +311,7 @@ CREATE TABLE `users` (
 
 /*Data for the table `users` */
 
-insert  into `users`(`id`,`role_id`,`email`,`username`,`full_name`,`email_verified_at`,`password`,`remember_token`,`photo_profile`,`is_login`,`gender`,`is_verified`,`last_login`,`created_at`,`updated_at`) values (1,1,'superadmin@example','admin','Superadmin',NULL,'$2y$12$21fKKnRjj5MFKUsjellMg.UGpKkTuZeYnojzQxTEyonJJGfH6qTRq',NULL,NULL,1,NULL,'verified','2025-02-25 07:31:01','2025-02-24 02:01:15','2025-10-01 13:09:21'),(2,3,'employee@example.com','staff','Staff',NULL,'$2y$12$21fKKnRjj5MFKUsjellMg.UGpKkTuZeYnojzQxTEyonJJGfH6qTRq',NULL,NULL,0,NULL,'verified',NULL,'2025-02-24 02:57:08','2025-06-18 08:12:55'),(3,2,'manager@example.com','manager','Manager',NULL,'$2y$12$21fKKnRjj5MFKUsjellMg.UGpKkTuZeYnojzQxTEyonJJGfH6qTRq',NULL,'default.svg',0,NULL,NULL,NULL,NULL,'2025-06-18 08:10:02');
+insert  into `users`(`id`,`role_id`,`email`,`username`,`full_name`,`email_verified_at`,`password`,`remember_token`,`photo_profile`,`is_login`,`gender`,`is_verified`,`last_login`,`created_at`,`updated_at`) values (1,1,'superadmin@example','superadmin','Superadmin',NULL,'$2y$12$21fKKnRjj5MFKUsjellMg.UGpKkTuZeYnojzQxTEyonJJGfH6qTRq',NULL,NULL,1,NULL,'verified','2025-02-25 07:31:01','2025-02-24 02:01:15','2025-11-20 08:27:12'),(2,2,'employee@example.com','admin','admin',NULL,'$2y$12$21fKKnRjj5MFKUsjellMg.UGpKkTuZeYnojzQxTEyonJJGfH6qTRq',NULL,NULL,1,NULL,'verified',NULL,'2025-02-24 02:57:08','2025-11-20 09:04:02'),(3,3,'manager@example.com','user','Idham Mansyah',NULL,'$2y$12$21fKKnRjj5MFKUsjellMg.UGpKkTuZeYnojzQxTEyonJJGfH6qTRq',NULL,'default.svg',1,NULL,NULL,NULL,NULL,'2025-11-20 09:00:54');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

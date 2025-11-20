@@ -11,27 +11,27 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
 
-    public function v_login()
+  public function v_login()
+  {
+    $data = [
+      'title' => 'Login Page'
+    ];
+
+    return view('auth.login', compact('data'));
+  }
+
+  public function attemptlogin(Request $request)
+  {
+    $request->validate([
+      'username' => 'required',
+      'password' => 'required',
+    ]);
+
+    if (Auth::attempt($request->only('username', 'password')))
     {
-        $data = [
-        'title' => 'Login Page'
-        ];
+      $user = Auth::user();
 
-        return view('auth.login', compact('data'));
-    }
-
-    public function attemptlogin(Request $request)
-    {
-       $request->validate([
-            'username' => 'required',
-            'password' => 'required',
-        ]);
-
-        if (Auth::attempt($request->only('username', 'password')))
-        {
-            $user = Auth::user();
-
-            // Update kolom is_login
+      // Update kolom is_login
             $user->is_login = 1;
             $user->save();
 
