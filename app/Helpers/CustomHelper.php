@@ -186,5 +186,6 @@ if (!function_exists('canAccess')) {
             default  => false,
         };
     }
-  }
+}
+
 

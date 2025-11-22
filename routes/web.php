@@ -5,9 +5,11 @@ use App\Http\Controllers\AuthController\AuthController as AuthController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\AuthController\RoleController as role;
 use App\Http\Controllers\MenuController\Menu;
+use App\Http\Controllers\MenuController\MenuAssignment as menu_assignment;
 use App\Http\Controllers\ModuleController\Module as module;
 use App\Http\Controllers\ReimbursementController\Reimbursement as reimburse;
 use App\Http\Controllers\UserManagementController\UserController;
+use App\Http\Controllers\ModuleController\ModuleAssign;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewReimbursementNotification;
@@ -30,29 +32,33 @@ Route::middleware(['auth', 'module.access'])->group(function ()
   Route::put('/user-roles-update/{id}', [role::class, 'update'])->name('roles.update');
   Route::delete('/delete-roles/{id}', [role::class, 'destroy'])->name('roles.destroy');
 
-  // Menu Managaement
-  // assign
-  Route::get('/menu-management', [Menu::class, 'index'])->name('menu-management');
-  Route::post('/menu-management/update-access', [Menu::class, 'updateAccess'])->name('menu.management.update');
-  Route::post('/menu-management/assign', [Menu::class, 'storeAssign'])->name('menu.management.assign.store');
-  Route::delete('/menu-management/assign', [Menu::class, 'destroyAssign'])->name('menu.management.assign.destroy');
-  // menu
+  // Menu Management
+  Route::get('/menu-management', [Menu::class, 'index'])->name('menu.index');
+  Route::get('/menu/get-all', [Menu::class, 'getAll']); // load tree
+  Route::post('/menu/reorder', [Menu::class, 'reorder'])->name('menu.reorder');
+
+  Route::post('/menu', [Menu::class, 'store'])->name('menu.store');
   Route::get('/menu/{id}', [Menu::class, 'show']);
   Route::put('/menu/{id}', [Menu::class, 'update']);
-  Route::delete('/menu/{id}', [Menu::class, 'destroy']);
-  Route::post('/menu/store', [Menu::class, 'store'])->name('menu.store'); //
-  Route::get('/menus/by-category/{id}', [Menu::class, 'getByCategory'])->name('menu.byCategory');
-  Route::post('/menu/reorder', [Menu::class, 'reorderMenus'])->name('menu.reorder');
-  Route::get('/menu/get-by-category/{id}', [Menu::class, 'getByCategory'])->name('menu.get-by-category');
-  Route::get('/menu/{id}', [Menu::class, 'get_menu_by_id'])->name('menu.show');
-  Route::put('/menu/{id}', [Menu::class, 'update_menu'])->name('menu.update');
+  Route::post('/menu/{id}/delete', [Menu::class, 'softDelete']);
+
+  // Menu assignment
+  Route::get('/menu-assignment', [menu_assignment::class, 'index'])->name('menu-assignment');
+  Route::get('/menu-assignment/menus-tree', [menu_assignment::class, 'menusTree'])->name('menu.assignment.menusTree');
+  Route::get('/menu-assignment/menu/{id}/roles', [menu_assignment::class, 'getRolesForMenu'])->name('menu.assignment.menu.roles');
+  Route::post('/menu-assignment/menu/{id}/toggle-role',[menu_assignment::class, 'toggleRole'])->name('menu.assignment.menu.toggle');
 
   // Master Module
   Route::get('/master-module', [module::class, 'index'])->name('master-module');
   Route::post('/add-modules', [module::class, 'store'])->name('modules.store');
   Route::get('/edit-module/{id}', [module::class, 'edit'])->name('modules.edit');
   Route::put('/update-module/{id}', [module::class, 'update'])->name('modules.update');
-  Route::delete('/delete-module/{id}', [module::class, 'destroy'])->name('modules.destroy');
+  Route::post('/delete-module/{id}', [module::class, 'destroy'])->name('modules.destroy');
+
+  // Module Assign
+  Route::get('/module-assign', [ModuleAssign::class, 'index']);
+  Route::get('/module-assign/get/{id}', [ModuleAssign::class, 'getModuleData']);
+  Route::post('/module-assign/save',[ModuleAssign::class, 'saveAssign'])->name('module.assign.save');
 
   Route::get('/users', [UserController::class, 'index'])->name('users');
   Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');

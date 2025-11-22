@@ -83,7 +83,7 @@
                 <i class="bi bi-plus"></i>&nbsp; Add New User
               </button> --}}
               @canCreate
-                <button class="btn btn-primary">Add User</button>
+              <button class="btn btn-primary btn-sm"><i class="bi bi-plus-square"></i>&nbsp;Add User</button>
               @endcanCreate
             </div>
           </div>
@@ -114,14 +114,25 @@
                     @endif
                   </td>
                   <td>
-                    <button type="button" class="btn btn-sm btn-warning edit-role-btn" data-id="{{ $user->id }}"
+                    @canUpdate
+                    <button class="btn btn-sm btn-warning edit-role-btn" data-id="{{ $user->id }}"
                       data-name="{{ $user->username }}">
                       Edit
                     </button>
-                    <button type="button" class="btn btn-sm btn-danger delete-role-btn" data-id="{{ $user->id }}"
+                    @else
+                    <small class="text-muted d-block">No update permission</small>
+                    @endcanUpdate
+
+
+                    @canDelete
+                    <button class="btn btn-sm btn-danger delete-role-btn" data-id="{{ $user->id }}"
                       data-name="{{ $user->username }}">
                       Delete
                     </button>
+                    @else
+                    <small class="text-muted d-block">No delete permission</small>
+                    @endcanDelete
+
                   </td>
                 </tr>
                 @empty
@@ -168,15 +179,25 @@
                 <div class="card-footer bg-white border-0">
                   <div class="mt-3 d-flex justify-content-center gap-2">
 
-                    <button class="btn btn-warning btn-sm action-btn edit-role-btn" data-id="{{ $user->id }}"
+                    @canUpdate
+                    <button class="btn btn-sm btn-warning edit-role-btn" data-id="{{ $user->id }}"
                       data-name="{{ $user->username }}">
-                      <i class="bi bi-pencil"></i> Edit
+                      Edit
                     </button>
+                    @else
+                    <small class="text-muted d-block">No update permission</small>
+                    @endcanUpdate
 
-                    <button class="btn btn-danger btn-sm action-btn delete-role-btn" data-id="{{ $user->id }}"
+
+                    @canDelete
+                    <button class="btn btn-sm btn-danger delete-role-btn" data-id="{{ $user->id }}"
                       data-name="{{ $user->username }}">
-                      <i class="bi bi-trash"></i> Delete
+                      Delete
                     </button>
+                    @else
+                    <small class="text-muted d-block">No delete permission</small>
+                    @endcanDelete
+
 
                   </div>
                 </div>
