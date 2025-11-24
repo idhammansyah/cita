@@ -31,8 +31,8 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="card-title">Menu Management</h5>
 
-      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addMenuModal">
-        + Tambah Menu
+      <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addMenuModal">
+        + Add New Menu
       </button>
     </div>
 
@@ -63,8 +63,6 @@
 
 
 @section('scripts')
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nestedSortable/2.0.0/jquery.mjs.nestedSortable.min.js"
@@ -97,33 +95,48 @@
   ======================================== */
   function buildNode(node) {
 
-    let html = `
-    <li id="menu_${node.id_menus}" data-id="${node.id_menus}">
-        <div class="menu-item d-flex justify-content-between align-items-center">
-            <div>
-                <i class="${node.class} me-2"></i>
-                ${escapeHtml(node.nama_menu)}
-                <div class="meta">${escapeHtml(node.url_link)}</div>
-            </div>
-            <div>
-                <button class="btn btn-warning btn-sm btn-edit" data-id="${node.id_menus}">Edit</button>
-                <button class="btn btn-danger btn-sm btn-delete" data-id="${node.id_menus}">Delete</button>
-            </div>
-        </div>
-    `;
+    const hasChild = node.children && node.children.length > 0;
 
-    if (node.children && node.children.length) {
-      html += `<ul>`;
+    let html = `
+    <div id="menu_${node.id_menus}" data-id="${node.id_menus}" class="tree-node mb-1">
+
+      <div class="menu-item d-flex justify-content-between align-items-center w-100">
+
+        <!-- LEFT SIDE -->
+        <div class="d-flex align-items-center">
+          ${hasChild
+            ? `<i class="bi bi-caret-right expand-icon me-2"></i>`
+            : `<i class="expand-icon me-2"></i>`}
+
+          <i class="${node.class} me-2"></i>
+
+          <div>
+            <span class="fw-semibold">${escapeHtml(node.nama_menu)}</span>
+            <div class="meta small text-muted">${escapeHtml(node.url_link)}</div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDE BUTTONS -->
+        <div class="ms-auto">
+          <button class="btn btn-warning btn-sm btn-edit" data-id="${node.id_menus}">Edit</button>
+          <button class="btn btn-danger btn-sm btn-delete" data-id="${node.id_menus}">Delete</button>
+        </div>
+
+      </div>
+  `;
+
+    if (hasChild) {
+      html += `<div class="child-container ms-4">`;
       node.children.forEach(ch => {
         html += buildNode(ch);
       });
-      html += `</ul>`;
+      html += `</div>`;
     }
 
-    html += `</li>`;
+    html += `</div>`;
+
     return html;
   }
-
 
   function renderMenus(tree) {
     if (!tree.length) return `<p class="text-muted">Belum ada menu.</p>`;
@@ -179,14 +192,13 @@
     }).always(hideSpinner);
   }
 
-  /* ========================================
-     EDIT
-  ======================================== */
   $(document).on("click", ".btn-edit", function () {
     let id = $(this).data("id");
 
     showSpinner();
     $.get(`/menu/${id}`, res => {
+
+      // === SET ALL FORM FIELD ===
       $("#edit_id").val(res.id_menus);
       $("#edit_nama_menu").val(res.nama_menu);
       $("#edit_url_link").val(res.url_link);
@@ -194,7 +206,14 @@
       $("#edit_id_parent").val(res.id_parent);
       $("#edit_urutan").val(res.urutan);
 
+      // =========== Tambahan: Set kategori + module ===========
+      $("#edit_id_menu_kategori").val(res.id_menu_kategori);
+      $("#edit_id_modules").val(res.id_modules);
+
+      // === Set action form ===
       $("#formEditMenu").attr("action", `/menu/${id}`);
+
+      // === Tampilkan modal ===
       $("#editMenuModal").modal("show");
 
     }).fail(() => {
@@ -203,8 +222,8 @@
   });
 
   /* ========================================
-     UPDATE
-  ======================================== */
+      UPDATE MENU (tidak update jika modal ditutup)
+  =========================================== */
   $("#formEditMenu").on("submit", function (e) {
     e.preventDefault();
     let url = $(this).attr("action");

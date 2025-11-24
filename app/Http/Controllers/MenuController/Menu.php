@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MenuController;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
@@ -83,6 +84,9 @@ class Menu extends Controller
         "nama_menu" => $r->nama_menu,
         "url_link"  => $r->url_link,
         "class"     => $r->class,
+        "id_menu_kategori"  => $r->id_menu_kategori,
+        "id_modules" => $r->id_modules,
+        "posisi"    => $r->posisi,
         "id_parent" => $r->id_parent,
         "urutan"    => $r->urutan
       ]);

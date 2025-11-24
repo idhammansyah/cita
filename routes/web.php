@@ -20,9 +20,7 @@ Route::get('/login', [AuthController::class, 'v_login'])->name('login');
 Route::post('/attempt-login', [AuthController::class, 'attemptlogin'])->name('attemptlogin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
-// Route::middleware('auth')->group(function ()
-Route::middleware(['auth', 'module.access'])->group(function ()
+Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
 {
   Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

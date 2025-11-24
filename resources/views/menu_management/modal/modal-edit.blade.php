@@ -39,12 +39,20 @@
 
               <div class="mb-3">
                 <label class="form-label">Kategori</label>
-                <select id="edit_id_menu_kategori" name="id_menu_kategori" class="form-select"></select>
+                <select id="edit_id_menu_kategori" name="id_menu_kategori" class="form-select">
+                  @foreach($categories as $c)
+                    <option value="{{ $c->id_menu_kategori }}">{{ $c->nama_kategori }}</option>
+                  @endforeach
+                </select>
               </div>
 
               <div class="mb-3">
                 <label class="form-label">Module</label>
-                <select id="edit_id_modules" name="id_modules" class="form-select"></select>
+                <select id="edit_id_modules" name="id_modules" class="form-select">
+                  @foreach($modules as $m)
+                    <option value="{{ $m->id_modules }}">{{ $m->nama_modules }}</option>
+                  @endforeach
+                </select>
               </div>
 
               <div class="mb-3">
@@ -57,7 +65,14 @@
 
               <div class="mb-3">
                 <label class="form-label">Parent</label>
-                <select id="edit_id_parent" name="id_parent" class="form-select"></select>
+                <select id="edit_id_parent" name="id_parent" class="form-select">
+                  <option value="0">Parent Menu</option>
+                  @foreach($all_menus as $pm)
+                    @if($pm->id_parent == 0)
+                      <option value="{{ $pm->id_menus }}">{{ $pm->nama_menu }}</option>
+                    @endif
+                  @endforeach
+                </select>
               </div>
 
               <div class="mb-3">

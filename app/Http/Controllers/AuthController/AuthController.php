@@ -32,24 +32,29 @@ class AuthController extends Controller
       $user = Auth::user();
 
       // Update kolom is_login
-            $user->is_login = 1;
-            $user->save();
-
-            return redirect()->route('dashboard')->with('success', 'Login berhasil');
-        } else {
-            return back()->withErrors(['username' => 'Username atau password salah']);
-        }
-
-    }
-
-    public function logout()
-    {
-      $user = Auth::user();
-      $user->is_login = 0;
+      $user->is_login = 1;
       $user->save();
 
-      Auth::logout();
-      return redirect()->to('/login')->with('success', 'Logout berhasil');
+      if ($user->role_id == 3) {
+        // Redirect ke halaman khusus pengguna biasa
+        return redirect()->route('user.dashboard')->with('success', 'Selamat datang!');
+      }
+
+      return redirect()->route('dashboard')->with('success', 'Login berhasil');
+    } else {
+      return back()->withErrors(['username' => 'Username atau password salah']);
     }
+  }
+
+  public function logout()
+  {
+    $user = Auth::user();
+    $user->is_login = 0;
+    $user->save();
+
+    Auth::logout();
+
+    return redirect()->to('/login')->with('success', 'Logout berhasil');
+  }
 
 }

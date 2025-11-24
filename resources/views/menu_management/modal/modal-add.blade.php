@@ -4,7 +4,7 @@
       <form id="formAddMenu" method="POST" action="{{ route('menu.store') }}">
         @csrf
         <div class="modal-header">
-          <h5 class="modal-title" id="addMenuLabel">Tambah Menu Baru</h5>
+          <h5 class="modal-title" id="addMenuLabel">Add New Menu</h5>
           <button class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
@@ -59,7 +59,7 @@
               <div class="mb-3">
                 <label class="form-label">Parent</label>
                 <select name="id_parent" class="form-select">
-                  <option value="0">-- Main Menu --</option>
+                  <option value="0">Parent Menu</option>
                   @foreach($all_menus as $pm)
                     @if($pm->id_parent == 0)
                       <option value="{{ $pm->id_menus }}">{{ $pm->nama_menu }}</option>

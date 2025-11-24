@@ -168,7 +168,6 @@
       return html;
     }
 
-
     $(document).on("click", ".tree-node", function (e) {
       const icon = $(this).find(".expand-icon");
       const child = $(this).next(".child-container");
