@@ -58,10 +58,11 @@ Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
   Route::get('/module-assign/get/{id}', [ModuleAssign::class, 'getModuleData']);
   Route::post('/module-assign/save',[ModuleAssign::class, 'saveAssign'])->name('module.assign.save');
 
+  // users
   Route::get('/users', [UserController::class, 'index'])->name('users');
   Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
   Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
-  Route::patch('/users/{id}', [UserController::class, 'destroy'])->name('users.disable');
+  Route::post('/users/{id}', [UserController::class, 'destroy'])->name('users.disable');
   Route::post('/users', [UserController::class, 'store'])->name('users.store');
 
   // reimbursement

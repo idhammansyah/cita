@@ -78,10 +78,6 @@
                 <i class="bi bi-grid"></i> Card View
               </button>
 
-              {{-- <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                data-bs-target="#addRoleModal">
-                <i class="bi bi-plus"></i>&nbsp; Add New User
-              </button> --}}
               @canCreate
               <button class="btn btn-primary btn-sm"><i class="bi bi-plus-square"></i>&nbsp;Add User</button>
               @endcanCreate
@@ -215,6 +211,50 @@
   </div>
 </section>
 
+<!-- MODAL EDIT ROLE -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form id="formEditUser" method="POST">
+      @csrf
+      @method('PUT')
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit User Role</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <input type="hidden" id="edit_user_id" name="user_id">
+
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" id="edit_username" class="form-control" readonly>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select name="role_id" id="edit_role_id" class="form-select">
+              @foreach($roles as $r)
+              <option value="{{ $r->id_roles }}">{{ $r->nama_roles }}</option>
+              @endforeach
+            </select>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+
 <script>
   const tableView = document.getElementById("tableView");
   const cardView = document.getElementById("cardView");
@@ -236,6 +276,94 @@
   });
 
 </script>
+
+<script>
+  // ================================
+  // OPEN EDIT MODAL
+  // ================================
+  $(document).on("click", ".edit-role-btn", function () {
+    const id = $(this).data("id");
+
+    $.get(`/users/${id}/edit`, function (res) {
+      $("#edit_user_id").val(res.id);
+      $("#edit_username").val(res.username);
+      $("#edit_role_id").val(res.role_id);
+
+      $("#formEditUser").attr("action", `/users/${id}`);
+      $("#editUserModal").modal("show");
+    });
+  });
+
+
+  // ================================
+  // SUBMIT EDIT
+  // ================================
+  $("#formEditUser").on("submit", function (e) {
+    e.preventDefault();
+
+    const url = $(this).attr("action");
+
+    $.ajax({
+      url: url,
+      type: "PUT",
+      data: $(this).serialize(),
+      success: function () {
+        $("#editUserModal").modal("hide");
+
+        Swal.fire({
+          icon: "success",
+          title: "Updated!",
+          text: "User role updated successfully.",
+        }).then(() => {
+          location.reload();
+        });
+      },
+      error: function () {
+        Swal.fire("Error", "Failed to update user.", "error");
+      }
+    });
+
+  });
+
+
+
+  // ================================
+  // DELETE USER CONFIRMATION
+  // ================================
+  $(document).on("click", ".delete-role-btn", function () {
+    const id = $(this).data("id");
+    const name = $(this).data("name");
+
+    Swal.fire({
+      title: "Delete User?",
+      text: `Are you sure want to delete '${name}'?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: `/users/${id}`,
+          type: "POST",
+          data: {
+            _token: "{{ csrf_token() }}"
+          },
+          success: function () {
+            Swal.fire("Deleted!", "User has been removed.", "success")
+              .then(() => location.reload());
+          },
+          error: function () {
+            Swal.fire("Error", "Failed to delete user.", "error");
+          },
+        });
+      }
+    });
+
+  });
+
+</script>
+
 
 
 @endsection
