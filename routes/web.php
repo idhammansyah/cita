@@ -14,11 +14,17 @@ use App\Http\Controllers\ModuleController\ModuleAssign;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\NewReimbursementNotification;
 use App\Models\Reimbursement\ReimbursementEmployee;
+use App\Http\Controllers\TemplateController\Template as template_layout;
 
 // Route::get('/', [AuthController::class, 'v_login']);
 Route::get('/login', [AuthController::class, 'v_login'])->name('login');
 Route::post('/attempt-login', [AuthController::class, 'attemptlogin'])->name('attemptlogin');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// template view
+Route::get('/template/flipbook-template', [template_layout::class, 'flipbook'])->name('flipbook-template');
+
+Route::get('/invitation/wedding-of-idham-and-riska', [template_layout::class, 'wedding'])->name('wedding');
 
 Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
 {
@@ -72,6 +78,9 @@ Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
   Route::post('/reimbursements/{id}/delete', [reimburse::class, 'destroy'])->name('reimbursements.delete');
   Route::get('/reimbursements/{id}/edit', [reimburse::class, 'edit'])->name('reimbursements.edit');
   Route::post('/reimbursements/{id}/update', [reimburse::class, 'update'])->name('reimbursements.update');
+
+  // routes for edit layout wedding invitation idham & riska
+  Route::get('/edit/invitation/wedding-of-idham-and-riska', [template_layout::class, 'wedding'])->name('wedding');
 
   // approve untuk manager
   Route::post('/reimbursements/{id}/approve', [reimburse::class, 'approve'])->name('reimbursements.approve');
