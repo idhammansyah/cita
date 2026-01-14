@@ -399,7 +399,7 @@
 
           <hr class="my-4">
 
-          <div class="page-1-belakang d-none" id="editor-page-2">
+          <div class="editor-step d-none" id="editor-page-2">
             <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-paint-brush"></i> Styling & Tema</h5>
             <div class="mb-3">
               <label class="text-muted" class="form-label">Background Undangan (Color/Gradient)</label>
@@ -432,7 +432,7 @@
             </div>
           </div>
 
-          <div class="page-2-depan d-none" id="editor-page-3">
+          <div class="editor-step d-none" id="editor-page-3">
             <hr class="my-4">
 
             <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-user-friends"></i> Detail Mempelai</h5>
