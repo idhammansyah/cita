@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" modified="2025-01-01T12:00:00.000Z" agent="5.0" version="20.5.0">
+  <diagram id="rbacERD_fixed" name="RBAC ERD (fixed)">
+    <mxGraphModel dx="1560" dy="880" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" background="#ffffff">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- USERS -->
+        <mxCell id="users" value="users&#xa;-----------------------&#xa;id_users (PK)&#xa;nama&#xa;email&#xa;password&#xa;created_at&#xa;updated_at" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1">
+          <mxGeometry x="40" y="40" width="220" height="200" as="geometry"/>
+        </mxCell>
+
+        <!-- ROLES -->
+        <mxCell id="roles" value="roles&#xa;-----------------------&#xa;id_roles (PK)&#xa;nama_roles&#xa;is_deleted&#xa;created_at&#xa;updated_at" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1">
+          <mxGeometry x="350" y="40" width="220" height="200" as="geometry"/>
+        </mxCell>
+
+        <!-- USER ROLES -->
+        <mxCell id="user_roles" value="user_roles&#xa;-----------------------&#xa;id_user_roles (PK)&#xa;id_users (FK)&#xa;id_roles (FK)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1">
+          <mxGeometry x="200" y="300" width="220" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- MODULES -->
+        <mxCell id="modules" value="modules&#xa;-----------------------&#xa;id_modules (PK)&#xa;nama_modules&#xa;url_module&#xa;icon&#xa;urutan&#xa;is_active" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1">
+          <mxGeometry x="700" y="40" width="220" height="200" as="geometry"/>
+        </mxCell>
+
+        <!-- MODULE ROLES (CRU D di module_roles) -->
+        <mxCell id="module_roles" value="module_roles&#xa;-----------------------&#xa;id_module_roles (PK)&#xa;id_module (FK)&#xa;id_role (FK)&#xa;can_read&#xa;can_create&#xa;can_update&#xa;can_delete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1">
+          <mxGeometry x="700" y="300" width="250" height="220" as="geometry"/>
+        </mxCell>
+
+        <!-- MENU CATEGORY -->
+        <mxCell id="menus_kategori" value="menus_kategori&#xa;-----------------------&#xa;id_menu_kategori (PK)&#xa;nama_kategori&#xa;urutan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1">
+          <mxGeometry x="1030" y="40" width="220" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- MENUS -->
+        <mxCell id="menus" value="menus&#xa;-----------------------&#xa;id_menus (PK)&#xa;id_modules (FK)&#xa;id_menu_kategori (FK)&#xa;nama_menu&#xa;url_link&#xa;class&#xa;urutan&#xa;is_active" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#c88700;" vertex="1">
+          <mxGeometry x="1030" y="260" width="250" height="240" as="geometry"/>
+        </mxCell>
+
+        <!-- MENU ROLES (OVERRIDE ONLY — NO CRUD COLUMNS) -->
+        <mxCell id="menu_roles" value="menu_roles&#xa;-----------------------&#xa;id_menu_roles (PK)&#xa;id_menus (FK)&#xa;id_roles (FK)&#xa;-- (override/assignment only)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#7566a0;" vertex="1">
+          <mxGeometry x="1030" y="550" width="260" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- RELATIONS -->
+
+        <!-- users -> user_roles -->
+        <mxCell id="rel_users_userroles" edge="1" parent="1" source="users" target="user_roles" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+        <!-- roles -> user_roles -->
+        <mxCell id="rel_roles_userroles" edge="1" parent="1" source="roles" target="user_roles" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+
+        <!-- roles -> module_roles -->
+        <mxCell id="rel_roles_moduleroles" edge="1" parent="1" source="roles" target="module_roles" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+        
+        <!-- modules -> module_roles -->
+        <mxCell id="rel_modules_moduleroles" edge="1" parent="1" source="modules" target="module_roles" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+
+        <!-- menus_kategori -> menus -->
+        <mxCell id="rel_cat_menus" edge="1" parent="1" source="menus_kategori" target="menus" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+
+        <!-- modules -> menus -->
+        <mxCell id="rel_modules_menus" edge="1" parent="1" source="modules" target="menus" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+
+        <!-- roles -> menu_roles -->
+        <mxCell id="rel_roles_menuroles" edge="1" parent="1" source="roles" target="menu_roles" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+
+        <!-- menus -> menu_roles -->
+        <mxCell id="rel_menus_menuroles" edge="1" parent="1" source="menus" target="menu_roles" style="endArrow=block;endFill=1;strokeColor=#000000;"/>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

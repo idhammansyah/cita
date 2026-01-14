@@ -4,15 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Editor Undangan - Idham Mansyah & Riska Oktaviani</title>
+  <title>Editor Undangan - Galih & Ratna</title>
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display&family=Poppins&display=swap"
-    rel="stylesheet">
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&family=Dancing+Script:wght@400;700&display=swap');
@@ -226,21 +221,9 @@
       color: var(--primary-color);
     }
 
-    .groom-name,
-    .bride-name {
-      width: 100%;
-    }
-
     /* Menggunakan Secondary Accent Color */
     .cover-border {
-      border: 2px solid var(--secondary-accent);
-      padding: 20px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
+      border: 3px solid var(--secondary-accent);
     }
 
     .bow-decoration,
@@ -285,27 +268,6 @@
       box-shadow: 0 2px 5px rgba(217, 121, 121, 0.5);
     }
 
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      font-size: 12px;
-    }
-
-    .wedding-text {
-      font-family: 'Playfair Display', serif;
-      font-size: 12px;
-      letter-spacing: 2px;
-      color: #555;
-      margin-top: 20px;
-    }
-
-    .wedding-rings {
-      width: 80px;
-      height: 80px;
-      margin: 15px 0;
-    }
-
   </style>
 </head>
 
@@ -316,148 +278,136 @@
       <div class="col-xl-4 col-lg-5 editor-panel">
         <h3 class="fw-bold mb-4 text-center">Editor Undangan</h3>
 
-        <div class="editorSteps">
-          <div class="editor-step" id="editor-page-1">
-            <h5 class="text-danger">Page 1 <br><br>Judul & Nama</h5>
+        <div class="page-1" id="page-1">
+          <h5 class="text-danger">Judul & Nama</h5>
 
-            <div class="mb-3">
-              <label class="text-muted">Nama Pria <b class="text-danger">*</b></label>
-              <input id="groomCoverInput" class="form-control" name="" required>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Nama Wanita <b class="text-danger">*</b></label>
-              <input id="brideCoverInput" class="form-control" name="" required>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Tanggal Pernikahan <b class="text-danger">*</b></label>
-              <input type="text" id="dateCoverInput" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Tagline</label>
-              <input id="taglineInput" class="form-control" name="" placeholder="(optional)">
-            </div>
-
-            <hr>
-
-            <h5 class="text-danger">Font & Posisi</h5>
-
-            <div class="mb-3">
-              <label class="text-muted">Font Family</label>
-              <select id="fontInput" class="form-select">
-                <option value="'Great Vibes', cursive" selected>Great Vibes</option>
-                <option value="'Playfair Display', serif">Playfair Display</option>
-                <option value="'Poppins', sans-serif">Poppins</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Ukuran Nama (px)</label>
-              <input type="range" min="20" max="50" value="25" id="nameSizeInput">
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Text Align</label>
-              <select id="alignInput" class="form-control">
-                <option value="center">Center</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
-            </div>
-
-            <hr>
-
-            <h5 class="text-danger">Dekorasi</h5>
-
-            <div class="mb-3">
-              <label class="text-muted">Icon Pita</label>
-              <select id="bowIconInput" class="form-control">
-                <option value="🎀">🎀</option>
-                <option value="🌸">🌸</option>
-                <option value="✨">✨</option>
-                <option value="❀">❀</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Ukuran Pita</label>
-              <input type="range" min="10" max="40" value="20" id="bowSizeInput">
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Hati</label>
-              <select id="heartInput" class="form-control">
-                <option value="♡ ♡ ♡">♡ ♡ ♡</option>
-                <option value="♥ ♥ ♥">♥ ♥ ♥</option>
-                <option value="❥ ❥ ❥">❥ ❥ ❥</option>
-              </select>
-            </div>
-
+          <div class="mb-3">
+            <label>Nama Pria</label>
+            <input id="groomCoverInput" class="form-control" value="Galih">
           </div>
 
-          <hr class="my-4">
-
-          <div class="page-1-belakang d-none" id="editor-page-2">
-            <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-paint-brush"></i> Styling & Tema</h5>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Background Undangan (Color/Gradient)</label>
-              <input type="text" id="bgGradientInput" class="form-control"
-                value="linear-gradient(135deg, #f5e6e8 0%, #d5c4c6 100%)"
-                placeholder="cth: #f5f5f5 atau linear-gradient(...)">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Warna Aksen Utama (HEX - cth: #8b0000)</label>
-              <input type="text" id="primaryColorInput" class="form-control" value="#8b0000" placeholder="#8b0000">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Warna Aksen Sekunder (HEX - cth: #d97979)</label>
-              <input type="text" id="secondaryColorInput" class="form-control" value="#d97979" placeholder="#d97979">
-            </div>
-
-            <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-calendar-alt"></i> Acara</h5>
-
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Tempat Acara (Akad & Resepsi)</label>
-              <input type="text" id="venueInput" class="form-control" value="Gedung Masjuban">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Waktu Akad</label>
-              <input type="text" id="akadTimeInput" class="form-control" value="Pukul: 08.00 WIB - 10.00 WIB">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Waktu Resepsi</label>
-              <input type="text" id="resepsiTimeInput" class="form-control" value="Pukul: 11.00 WIB - selesai">
-            </div>
+          <div class="mb-3">
+            <label>Nama Wanita</label>
+            <input id="brideCoverInput" class="form-control" value="Ratna">
           </div>
 
-          <div class="page-2-depan d-none" id="editor-page-3">
-            <hr class="my-4">
-
-            <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-user-friends"></i> Detail Mempelai</h5>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Nama Lengkap Wanita (Halaman Profil)</label>
-              <input type="text" id="brideNameProfileInput" class="form-control" value="Ratnadewi">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Nama Lengkap Pria (Halaman Profil)</label>
-              <input type="text" id="groomNameProfileInput" class="form-control" value="Galih Setiabudi">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Info Wanita (Cth: Putra/Putri dari...)</label>
-              <textarea id="brideInfoInput" class="form-control"
-                rows="3">📷 @ratnadewi.2025&#10;Putri Bapak John Setiawan &amp;&#10;Ibu Jeny Purwandari</textarea>
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Info Pria (Cth: Putra/Putri dari...)</label>
-              <textarea id="groomInfoInput" class="form-control"
-                rows="3">📷 @galihsabudi2025&#10;Putra Bapak Dodo Sudiman &amp;&#10;Ibu Ani Rahmawati</textarea>
-            </div>
-
-            <hr class="my-4">
+          <div class="mb-3">
+            <label>Tagline</label>
+            <input id="taglineInput" class="form-control" value="">
           </div>
+
+          <hr>
+
+          <h5 class="text-danger">Font & Posisi</h5>
+
+          <div class="mb-3">
+            <label>Ukuran Nama (px)</label>
+            <input type="range" min="20" max="60" value="36" id="nameSizeInput">
+          </div>
+
+          <div class="mb-3">
+            <label>Text Align</label>
+            <select id="alignInput" class="form-control">
+              <option value="center">Center</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+
+          <hr>
+
+          <h5 class="text-danger">Dekorasi</h5>
+
+          <div class="mb-3">
+            <label>Icon Pita</label>
+            <select id="bowIconInput" class="form-control">
+              <option value="🎀">🎀</option>
+              <option value="🌸">🌸</option>
+              <option value="✨">✨</option>
+              <option value="❀">❀</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label>Ukuran Pita</label>
+            <input type="range" min="10" max="40" value="20" id="bowSizeInput">
+          </div>
+
+          <div class="mb-3">
+            <label>Hati</label>
+            <select id="heartInput" class="form-control">
+              <option value="♡ ♡ ♡">♡ ♡ ♡</option>
+              <option value="♥ ♥ ♥">♥ ♥ ♥</option>
+              <option value="❥ ❥ ❥">❥ ❥ ❥</option>
+            </select>
+          </div>
+
         </div>
+
+        <hr class="my-4">
+
+
+        <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-paint-brush"></i> Styling & Tema</h5>
+
+        <div class="mb-3">
+          <label class="form-label">Background Undangan (Color/Gradient)</label>
+          <input type="text" id="bgGradientInput" class="form-control"
+            value="linear-gradient(135deg, #f5e6e8 0%, #d5c4c6 100%)"
+            placeholder="cth: #f5f5f5 atau linear-gradient(...)">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Warna Aksen Utama (HEX - cth: #8b0000)</label>
+          <input type="text" id="primaryColorInput" class="form-control" value="#8b0000" placeholder="#8b0000">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Warna Aksen Sekunder (HEX - cth: #d97979)</label>
+          <input type="text" id="secondaryColorInput" class="form-control" value="#d97979" placeholder="#d97979">
+        </div>
+
+
+        <hr class="my-4">
+
+        <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-user-friends"></i> Detail Mempelai</h5>
+        <div class="mb-3">
+          <label class="form-label">Nama Lengkap Wanita (Halaman Profil)</label>
+          <input type="text" id="brideNameProfileInput" class="form-control" value="Ratnadewi">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Nama Lengkap Pria (Halaman Profil)</label>
+          <input type="text" id="groomNameProfileInput" class="form-control" value="Galih Setiabudi">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Info Wanita (Cth: Putra/Putri dari...)</label>
+          <textarea id="brideInfoInput" class="form-control"
+            rows="3">📷 @ratnadewi.2025&#10;Putri Bapak John Setiawan &amp;&#10;Ibu Jeny Purwandari</textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Info Pria (Cth: Putra/Putri dari...)</label>
+          <textarea id="groomInfoInput" class="form-control"
+            rows="3">📷 @galihsabudi2025&#10;Putra Bapak Dodo Sudiman &amp;&#10;Ibu Ani Rahmawati</textarea>
+        </div>
+
+        <hr class="my-4">
+
+
+        <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-calendar-alt"></i> Acara</h5>
+        <div class="mb-3">
+          <label class="form-label">Tanggal Pernikahan (DD.MM.YYYY)</label>
+          <input type="text" id="dateCoverInput" class="form-control" value="12.12.2025">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tempat Acara (Akad & Resepsi)</label>
+          <input type="text" id="venueInput" class="form-control" value="Gedung Masjuban">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Waktu Akad</label>
+          <input type="text" id="akadTimeInput" class="form-control" value="Pukul: 08.00 WIB - 10.00 WIB">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Waktu Resepsi</label>
+          <input type="text" id="resepsiTimeInput" class="form-control" value="Pukul: 11.00 WIB - selesai">
+        </div>
+
 
         <p class="text-muted text-center small mt-5">Auto Preview aktif • Perubahan tampil secara real-time</p>
       </div>
@@ -476,6 +426,11 @@
                 <div class="page page-right" id="page1-right" style="z-index: 6;">
                   <div class="page-content">
                     <div class="cover-border">
+                      <div class="bow-decoration bow-top-left">🎀</div>
+                      <div class="bow-decoration bow-top-right">🎀</div>
+                      <div class="bow-decoration bow-bottom-left">🎀</div>
+                      <div class="bow-decoration bow-bottom-right">🎀</div>
+
 
                       <div class="bow-decoration bow top-left" data-key="bow"></div>
                       <div class="bow-decoration bow top-right" data-key="bow"></div>
@@ -489,13 +444,12 @@
                         <circle cx="55" cy="45" r="15" fill="none" stroke="#d97979" stroke-width="2.5"></circle>
                       </svg>
 
-                      <div class="wedding-text text-center">THE WEDDING OF <br><br></div>
+                      <div class="wedding-text text-center">THE WEDDING OF</div>
 
-                      <div class="groom-name" id="previewGroomCover"></div>
-                      <div class="ambersand" id="previewGroomCover">&</div>
-                      <div class="bride-name" id="previewBrideCover"></div>
+                      <div class="groom-name text-center" id="previewGroomCover">Galih</div>
+                      <div class="bride-name text-center" id="previewBrideCover">Ratna</div>
 
-                      <div class="wedding-date text-center" id="previewDateCover">30 June 2026</div>
+                      <div class="wedding-date text-center" id="previewDateCover">12.12.2025</div>
 
                       <div class="flower-box">
                         <div class="flower-icon">🌸 🌼</div>
@@ -511,16 +465,52 @@
                 <div class="page page-left hide" id="page1-back" style="z-index: 6;">
                   <div class="page-content">
                     <div class="calendar-container">
+                      <div class="calendar-title">Turut mengundang</div>
+                      <div class="calendar-subtitle">Bpk/Ibu/Saudara/i dalam acara pernikahan kami</div>
 
-                      <div class="calendar-title">Turut Mengundang</div>
-                      <div class="calendar-subtitle">
-                        Bpk/Ibu/Saudara/i dalam acara pernikahan kami
+                      <div class="month-year">DESEMBER 2025</div>
+
+                      <div class="calendar-grid">
+                        <div class="calendar-day" style="font-weight: bold;">S</div>
+                        <div class="calendar-day" style="font-weight: bold;">S</div>
+                        <div class="calendar-day" style="font-weight: bold;">R</div>
+                        <div class="calendar-day" style="font-weight: bold;">K</div>
+                        <div class="calendar-day" style="font-weight: bold;">J</div>
+                        <div class="calendar-day" style="font-weight: bold;">S</div>
+                        <div class="calendar-day" style="font-weight: bold;">M</div>
+
+                        <div class="calendar-day">1</div>
+                        <div class="calendar-day">2</div>
+                        <div class="calendar-day">3</div>
+                        <div class="calendar-day">4</div>
+                        <div class="calendar-day">5</div>
+                        <div class="calendar-day">6</div>
+                        <div class="calendar-day">7</div>
+                        <div class="calendar-day">8</div>
+                        <div class="calendar-day">9</div>
+                        <div class="calendar-day">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day highlight">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day">31</div>
                       </div>
-
-                      <div class="month-year" id="calendarMonthYear"></div>
-
-                      <div class="calendar-grid" id="calendarGrid"></div>
-
                     </div>
                   </div>
                 </div>
@@ -861,207 +851,93 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
-  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
   <script>
-    /* =======================
-      GLOBAL STATE
-    ======================= */
     const state = {
-      cover: {
-        groom: '',
-        bride: '',
-        tagline: '',
-        dates: '30 June 2026',
-        nameSize: 25,
-        font: "'Great Vibes', cursive",
-        align: 'center',
-        bow: '🎀',
-        bowSize: 20,
-        hearts: '♡ ♡ ♡'
-      }
+      groom: 'Idham Mansyah Awwalu',
+      bride: 'Riska Oktaviani',
+      tagline: '',
+      nameSize: 36,
+      align: 'center',
+      bow: '🎀',
+      bowSize: 20,
+      hearts: '♡ ♡ ♡'
     };
 
-    /* =======================
-      RENDER COVER (PAGE 1)
-    ======================= */
-    function renderCover() {
-      previewGroomCover.innerText = state.cover.groom;
-      previewBrideCover.innerText = state.cover.bride;
-      previewTagline.innerText = state.cover.tagline;
-      previewDateCover.innerText = state.cover.dates;
+    function render() {
+      document.getElementById('previewGroomCover').innerText = state.groom;
+      document.getElementById('previewBrideCover').innerText = state.bride;
+      document.getElementById('previewTagline').innerText = state.tagline;
 
-      document
-        .querySelectorAll('.groom-name, .ambersand, .bride-name')
-        .forEach(el => {
-          el.style.fontSize = state.cover.nameSize + 'px';
-          el.style.fontFamily = state.cover.font;
-          el.style.textAlign = state.cover.align;
-        });
+      document.querySelectorAll('.groom-name, .bride-name').forEach(el => {
+        el.style.fontSize = state.nameSize + 'px';
+        el.style.textAlign = state.align;
+      });
 
       document.querySelectorAll('[data-key="bow"]').forEach(el => {
-        el.innerText = state.cover.bow;
-        el.style.fontSize = state.cover.bowSize + 'px';
+        el.innerText = state.bow;
+        el.style.fontSize = state.bowSize + 'px';
       });
 
-      const hearts = document.querySelector('[data-key="hearts"]');
-      if (hearts) hearts.innerText = state.cover.hearts;
+      document.querySelector('[data-key="hearts"]').innerText = state.hearts;
     }
 
-    /* =======================
-      RENDER CALENDAR (PAGE BACK)
-    ======================= */
-    function renderCalendar() {
-      if (!state.cover.dates) return;
-
-      const date = new Date(state.cover.dates);
-      if (isNaN(date)) return;
-
-      const day = date.getDate();
-      const month = date.getMonth();
-      const year = date.getFullYear();
-
-      const monthNames = [
-        'JANUARI','FEBRUARI','MARET','APRIL','MEI','JUNI',
-        'JULI','AGUSTUS','SEPTEMBER','OKTOBER','NOVEMBER','DESEMBER'
-      ];
-
-      calendarMonthYear.innerText =
-        `${monthNames[month]} ${year}`;
-
-      calendarGrid.innerHTML = '';
-
-      // Header hari
-      ['S','S','R','K','J','S','M'].forEach(d => {
-        const el = document.createElement('div');
-        el.className = 'calendar-day';
-        el.style.fontWeight = 'bold';
-        el.innerText = d;
-        calendarGrid.appendChild(el);
-      });
-
-      const firstDay = new Date(year, month, 1).getDay();
-      const offset = (firstDay + 6) % 7;
-
-      for (let i = 0; i < offset; i++) {
-        calendarGrid.appendChild(document.createElement('div'));
-      }
-
-      const totalDays = new Date(year, month + 1, 0).getDate();
-
-      for (let i = 1; i <= totalDays; i++) {
-        const el = document.createElement('div');
-        el.className = 'calendar-day';
-        el.innerText = i;
-        if (i === day) el.classList.add('highlight');
-        calendarGrid.appendChild(el);
-      }
-    }
-
-    /* =======================
-      MASTER RENDER
-    ======================= */
-    function renderAll() {
-      renderCover();
-      renderCalendar();
-    }
-
-    /* =======================
-      FORM BINDING
-    ======================= */
     groomCoverInput.oninput = e => {
-      state.cover.groom = e.target.value;
-      renderAll();
+      state.groom = e.target.value;
+      render();
     };
-
     brideCoverInput.oninput = e => {
-      state.cover.bride = e.target.value;
-      renderAll();
+      state.bride = e.target.value;
+      render();
     };
-
     taglineInput.oninput = e => {
-      state.cover.tagline = e.target.value;
-      renderAll();
+      state.tagline = e.target.value;
+      render();
     };
-
     nameSizeInput.oninput = e => {
-      state.cover.nameSize = e.target.value;
-      renderAll();
+      state.nameSize = e.target.value;
+      render();
     };
-
     alignInput.onchange = e => {
-      state.cover.align = e.target.value;
-      renderAll();
+      state.align = e.target.value;
+      render();
     };
-
-    fontInput.onchange = e => {
-      state.cover.font = e.target.value;
-      renderAll();
-    };
-
     bowIconInput.onchange = e => {
-      state.cover.bow = e.target.value;
-      renderAll();
+      state.bow = e.target.value;
+      render();
     };
-
     bowSizeInput.oninput = e => {
-      state.cover.bowSize = e.target.value;
-      renderAll();
+      state.bowSize = e.target.value;
+      render();
     };
-
     heartInput.onchange = e => {
-      state.cover.hearts = e.target.value;
-      renderAll();
+      state.hearts = e.target.value;
+      render();
     };
 
-    /* =======================
-      DATE PICKER
-    ======================= */
-    $(function () {
-      $('#dateCoverInput')
-        .val(state.cover.dates)
-        .datepicker({
-          dateFormat: 'dd MM yy',
-          onSelect: function (dateText) {
-            state.cover.dates = dateText;
-            renderAll();
-          }
-        });
-    });
+    render();
 
-    /* =======================
-      INIT
-    ======================= */
-    renderAll();
   </script>
+
 
   <script>
     $(document).ready(function () {
-
       let currentPage = 0;
       let isAnimating = false;
       const totalPages = 5;
 
       const rightPageSelectors = [
-        '#page1-right',
-        '#page2-right',
-        '#page3-right',
-        '#page4-right',
-        '#page5-right'
+        '#page1-right', '#page2-right', '#page3-right', '#page4-right', '#page5-right',
       ];
-
       const leftPageSelectors = [
-        null,
-        '#page1-back',
-        '#page2-back',
-        '#page3-back',
-        '#page4-back',
-        '#page5-back'
+        null, '#page1-back', '#page2-back', '#page3-back', '#page4-back', '#page5-back',
       ];
 
       function updateButtons() {
+        // Logika menonaktifkan tombol hanya berlaku di desktop, di mobile swipe/tombol harus selalu aktif
         if ($(window).width() > 768) {
           $('#prevBtn').prop('disabled', currentPage === 0 || isAnimating);
           $('#nextBtn').prop('disabled', currentPage === totalPages || isAnimating);
@@ -1070,99 +946,160 @@
         }
       }
 
-     function updateEditorPanel(pageNum) {
-        $('.editor-step').addClass('d-none');
-        $('#editor-page-' + (pageNum + 1)).removeClass('d-none');
-      }
-
       function showPage(pageNum) {
 
         if (isAnimating) return;
         isAnimating = true;
 
-        $('.page')
-          .removeClass('is-center-pos flipped fade-in')
-          .addClass('hide');
+        // 1. Bersihkan semua kelas penempatan di tengah
+        $('.page').removeClass('is-center-pos');
 
         const isCentered = (pageNum === 0 || pageNum === totalPages);
 
-        setTimeout(() => {
+        // 2. Sembunyikan dan reset semua halaman untuk memulai
+        $('.page').removeClass('flipped').addClass('hide').removeClass('fade-in');
+
+        setTimeout(function () {
 
           if (isCentered) {
-
+            // Logika Halaman Tengah (Cover atau Thank You)
             if (pageNum === 0) {
+              // Tampilkan hanya Cover di tengah
               $('#page1-right').removeClass('hide').addClass('is-center-pos');
-            }
-
-            if (pageNum === totalPages) {
+            } else if (pageNum === totalPages) {
+              // Tampilkan hanya Thank You (Page 5 Left) di tengah
               $('#page5-back').removeClass('hide').addClass('is-center-pos');
             }
 
-            isAnimating = false;
-            updateButtons();
-            updateEditorPanel(pageNum);
+            setTimeout(function () {
+              isAnimating = false;
+              updateButtons();
+            }, 10);
 
           } else {
+            // Logika Normal Flipbook
 
+            // Tampilkan halaman yang sudah terbalik
             for (let i = 0; i < pageNum; i++) {
               $(rightPageSelectors[i]).removeClass('hide').addClass('flipped');
             }
 
-            $(leftPageSelectors[pageNum]).removeClass('hide').addClass('fade-in');
+            // Tampilkan halaman kiri (konten) saat ini
+            if (pageNum >= 1 && pageNum <= totalPages) {
+              $(leftPageSelectors[pageNum]).removeClass('hide').addClass('fade-in');
+            }
 
+            // Tampilkan halaman kanan (kosong) selanjutnya
             if (pageNum < totalPages) {
               $(rightPageSelectors[pageNum]).removeClass('hide');
             }
 
-            setTimeout(() => {
+            setTimeout(function () {
               isAnimating = false;
               updateButtons();
-              updateEditorPanel(pageNum);
-            }, 850);
+            }, 850); // Delay animasi flip
           }
 
         }, 10);
+        updateButtons();
       }
 
-      $('#nextBtn').on('click', () => {
+
+      $('#nextBtn').on('click', function () {
         if (currentPage < totalPages && !isAnimating) {
           currentPage++;
           showPage(currentPage);
         }
       });
 
-      $('#prevBtn').on('click', () => {
+      $('#prevBtn').on('click', function () {
         if (currentPage > 0 && !isAnimating) {
           currentPage--;
           showPage(currentPage);
         }
       });
 
-      $(window).on('resize', () => {
+      $(window).on('resize', function () {
         updateButtons();
         showPage(currentPage);
       });
 
-      const book = document.getElementById('book');
-      let startX = 0;
+      /* ====================================================
+         VIEW MODE TOGGLE
+      ===================================================== */
+      const wrapper = $('.book-container-wrapper');
+      const desktopBtn = $('#viewDesktop');
+      const mobileBtn = $('#viewMobile');
 
-      book.addEventListener('touchstart', e => {
-        startX = e.changedTouches[0].screenX;
-      }, { passive: true });
-
-      book.addEventListener('touchend', e => {
-        let diff = e.changedTouches[0].screenX - startX;
-        if (diff > 50 && currentPage > 0) currentPage--;
-        if (diff < -50 && currentPage < totalPages) currentPage++;
+      function toggleView(mode) {
+        if (mode === 'mobile') {
+          wrapper.addClass('mobile-view');
+          mobileBtn.removeClass('btn-outline-dark').addClass('btn-dark');
+          desktopBtn.removeClass('btn-dark').addClass('btn-outline-dark');
+        } else {
+          wrapper.removeClass('mobile-view');
+          desktopBtn.removeClass('btn-outline-dark').addClass('btn-dark');
+          mobileBtn.removeClass('btn-dark').addClass('btn-outline-dark');
+        }
         showPage(currentPage);
-      }, { passive: true });
+      }
 
+      desktopBtn.on('click', function () {
+        toggleView('desktop');
+      });
+
+      mobileBtn.on('click', function () {
+        toggleView('mobile');
+      });
+
+
+      // INITIAL LOAD
       showPage(0);
 
+      /* ====================================================
+         GESTURE SWIPE
+      ===================================================== */
+
+      const bookElement = document.getElementById('book');
+      let touchStartX = 0;
+      let touchEndX = 0;
+      const swipeThreshold = 50;
+
+      bookElement.addEventListener("touchstart", function (e) {
+        touchStartX = e.changedTouches[0].screenX;
+      }, {
+        passive: true
+      });
+
+      bookElement.addEventListener("touchend", function (e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipeGesture();
+      }, {
+        passive: true
+      });
+
+      function handleSwipeGesture() {
+        let diff = touchEndX - touchStartX;
+
+        // 👉 SWIPE KANAN (prev)
+        if (diff > swipeThreshold) {
+          if (currentPage > 0 && !isAnimating) {
+            currentPage--;
+            showPage(currentPage);
+          }
+        }
+
+        // 👉 SWIPE KIRI (next)
+        if (diff < -swipeThreshold) {
+          if (currentPage < totalPages && !isAnimating) {
+            currentPage++;
+            showPage(currentPage);
+          }
+        }
+      }
     });
+
   </script>
-
-
 
   {{-- <script>
     // Fungsi untuk memperbarui CSS Variables

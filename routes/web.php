@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\NewReimbursementNotification;
 use App\Models\Reimbursement\ReimbursementEmployee;
 use App\Http\Controllers\TemplateController\Template as template_layout;
+use App\Http\Controllers\DigitalCardController\ListUndangan\ListUndanganController as list_undangan;
 
 // Route::get('/', [AuthController::class, 'v_login']);
 Route::get('/login', [AuthController::class, 'v_login'])->name('login');
@@ -81,6 +82,9 @@ Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
 
   // routes for edit layout wedding invitation idham & riska
   Route::get('/edit/invitation/wedding-of-idham-and-riska', [template_layout::class, 'wedding'])->name('wedding');
+
+  // routes for List Undangan idham & riska
+  Route::get('/list-undangan', [list_undangan::class, 'index'])->name('list_undangan');
 
   // approve untuk manager
   Route::post('/reimbursements/{id}/approve', [reimburse::class, 'approve'])->name('reimbursements.approve');
