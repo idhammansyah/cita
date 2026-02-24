@@ -82,6 +82,7 @@ Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
 
   // routes for edit layout wedding invitation idham & riska
   Route::get('/edit/invitation/wedding-of-idham-and-riska', [template_layout::class, 'wedding'])->name('wedding');
+  Route::get('/invitation/wedding-of-idham-and-riska/', [template_layout::class, 'invitation'])->name('undanganku');
 
   // routes for List Undangan idham & riska
   Route::get('/list-undangan', [list_undangan::class, 'index'])->name('list_undangan');

@@ -22,4 +22,8 @@ class Template extends Controller
       compact('data'));
   }
 
+  public function invitation()
+  {
+    return view('undangan_layout.idham_riska.undanganku.undanganfix');
+  }
 }

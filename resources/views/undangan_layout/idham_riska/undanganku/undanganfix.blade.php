@@ -459,150 +459,13 @@
         opacity: .5;
       }
     /* === END PAGE 1 BACK === */
-
   </style>
 </head>
-
 <body>
   <div class="container-fluid">
     <div class="row">
 
-      <div class="col-xl-4 col-lg-5 editor-panel">
-        <h3 class="fw-bold mb-4 text-center">Editor Undangan</h3>
-
-        <div class="editorSteps">
-          <div class="editor-step" id="editor-page-1">
-            <h5 class="text-danger tex-uppercase fw-bold">Cover</h5>
-
-            <div class="mb-3">
-              <label class="text-muted">Nama Pria <b class="text-danger">*</b></label>
-              <input id="groomCoverInput" class="form-control" name="" required>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Nama Wanita <b class="text-danger">*</b></label>
-              <input id="brideCoverInput" class="form-control" name="" required>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Tanggal Pernikahan <b class="text-danger">*</b></label>
-              <input type="text" id="dateCoverInput" class="form-control" required>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Tagline</label>
-              <input id="taglineInput" class="form-control" name="" placeholder="(optional)">
-            </div>
-
-            <hr>
-
-            <h5 class="text-danger">Font & Posisi</h5>
-
-            <div class="mb-3">
-              <label class="text-muted">Font Family</label>
-              <select id="fontInput" class="form-select">
-                <option value="'Great Vibes', cursive" selected>Great Vibes</option>
-                <option value="'Playfair Display', serif">Playfair Display</option>
-                <option value="'Poppins', sans-serif">Poppins</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Ukuran Nama (px)</label>
-              <input type="range" min="20" max="50" value="25" id="nameSizeInput">
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Text Align</label>
-              <select id="alignInput" class="form-control">
-                <option value="center">Center</option>
-                <option value="left">Left</option>
-                <option value="right">Right</option>
-              </select>
-            </div>
-
-            <hr>
-
-            <h5 class="text-danger">Dekorasi</h5>
-
-            <div class="mb-3">
-              <label class="text-muted">Icon Pita</label>
-              <select id="bowIconInput" class="form-control">
-                <option value="🎀">🎀</option>
-                <option value="🌸">🌸</option>
-                <option value="✨">✨</option>
-                <option value="❀">❀</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Ukuran Pita</label>
-              <input type="range" min="10" max="40" value="20" id="bowSizeInput">
-            </div>
-
-            <div class="mb-3">
-              <label class="text-muted">Hati</label>
-              <select id="heartInput" class="form-control">
-                <option value="♡ ♡ ♡">♡ ♡ ♡</option>
-                <option value="♥ ♥ ♥">♥ ♥ ♥</option>
-                <option value="❥ ❥ ❥">❥ ❥ ❥</option>
-              </select>
-            </div>
-
-          </div>
-
-          <hr class="my-4">
-
-          <div class="editor-step d-none" id="editor-page-2">
-
-
-            <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-calendar-alt"></i> Acara</h5>
-
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Tempat Acara (Akad & Resepsi)</label>
-              <input type="text" id="venueInput" class="form-control" value="Gedung Masjuban">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Waktu Akad</label>
-              <input type="text" id="akadTimeInput" class="form-control" value="Pukul: 08.00 WIB - 10.00 WIB">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Waktu Resepsi</label>
-              <input type="text" id="resepsiTimeInput" class="form-control" value="Pukul: 11.00 WIB - selesai">
-            </div>
-          </div>
-
-          <div class="editor-step d-none" id="editor-page-3">
-            <hr class="my-4">
-
-            <h5 class="mt-3 mb-2 text-danger"><i class="fas fa-user-friends"></i> Detail Mempelai</h5>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Nama Lengkap Wanita (Halaman Profil)</label>
-              <input type="text" id="brideNameProfileInput" class="form-control" value="Ratnadewi">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Nama Lengkap Pria (Halaman Profil)</label>
-              <input type="text" id="groomNameProfileInput" class="form-control" value="Galih Setiabudi">
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Info Wanita (Cth: Putra/Putri dari...)</label>
-              <textarea id="brideInfoInput" class="form-control"
-                rows="3">📷 @ratnadewi.2025&#10;Putri Bapak John Setiawan &amp;&#10;Ibu Jeny Purwandari</textarea>
-            </div>
-            <div class="mb-3">
-              <label class="text-muted" class="form-label">Info Pria (Cth: Putra/Putri dari...)</label>
-              <textarea id="groomInfoInput" class="form-control"
-                rows="3">📷 @galihsabudi2025&#10;Putra Bapak Dodo Sudiman &amp;&#10;Ibu Ani Rahmawati</textarea>
-            </div>
-
-            <hr class="my-4">
-          </div>
-        </div>
-
-        <p class="text-muted text-center small mt-5">Auto Preview aktif • Perubahan tampil secara real-time</p>
-      </div>
-
-      <div class="col-xl-8 col-lg-7 preview-area d-flex justify-content-center align-items-center">
+      <div class="col-xl-12 col-lg-12 preview-area d-flex justify-content-center align-items-center">
 
         <div class="book-container-wrapper">
           <div class="page-wrapper">
@@ -704,23 +567,6 @@
                           </div>
 
                         </div>
-
-                        <!-- QUOTE -->
-                        {{-- <div class="calendar-quote">
-                          <span class="quote-icon">“</span>
-                          <span class="quote-text">
-                            Dan di antara tanda-tanda kekuasaan-Nya, Dia menciptakan pasangan-pasangan agar kamu merasa
-                            tenteram kepadanya.
-                          </span>
-                          <span class="quote-icon">”</span>
-                          <span class="quote-source">QS. Ar-Rum : 21</span>
-                        </div> --}}
-
-                        <!-- FOOTER -->
-                        {{-- <div class="calendar-footer">
-                          <span>Save the Date</span>
-                          <div class="footer-line"></div>
-                        </div> --}}
                       </div>
                     </div>
                   </div>
