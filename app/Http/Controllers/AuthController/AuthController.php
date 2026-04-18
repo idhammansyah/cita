@@ -35,10 +35,10 @@ class AuthController extends Controller
       $user->is_login = 1;
       $user->save();
 
-      if ($user->role_id == 3) {
-        // Redirect ke halaman khusus pengguna biasa
-        return redirect()->route('user.dashboard')->with('success', 'Selamat datang!');
-      }
+      // if ($user->role_id == 3) {
+      //   // Redirect ke halaman khusus pengguna biasa
+      //   return redirect()->route('user.dashboard')->with('success', 'Selamat datang!');
+      // }
 
       return redirect()->route('dashboard')->with('success', 'Login berhasil');
     } else {

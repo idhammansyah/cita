@@ -27,7 +27,7 @@ Route::get('/template/flipbook-template', [template_layout::class, 'flipbook'])-
 
 Route::get('/invitation/wedding-of-idham-and-riska', [template_layout::class, 'wedding'])->name('wedding');
 
-Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
+Route::middleware(['auth', 'module.access', 'role:1,2,3'])->group(function ()
 {
   Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -86,6 +86,13 @@ Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
 
   // routes for List Undangan idham & riska
   Route::get('/list-undangan', [list_undangan::class, 'index'])->name('list_undangan');
+  Route::get('/get-list-tamu', [list_undangan::class, 'get_list_tamu'])->name('get.list.tamu');
+  Route::post('/add-tamu', [list_undangan::class, 'store'])->name('add.tamu');
+  Route::get('/show-tamu/{id}', [list_undangan::class, 'show']);
+  Route::put('/update-tamu/{id}', [list_undangan::class, 'update']);
+  Route::post('/delete-tamu/{id}', [list_undangan::class, 'destroy']);
+  Route::get('/wa/{id}', [list_undangan::class, 'getWaData']);
+  Route::post('/wa/update-status', [list_undangan::class, 'updateWaStatus']);
 
   // approve untuk manager
   Route::post('/reimbursements/{id}/approve', [reimburse::class, 'approve'])->name('reimbursements.approve');
@@ -96,7 +103,7 @@ Route::middleware(['auth', 'module.access', 'role:1,2'])->group(function ()
     $reimbursement = ReimbursementEmployee::with(['user', 'category'])->first();
 
     if (!$reimbursement) {
-        return "Error: No reimbursement data found. Create one first or make a dummy here.";
+      return "Error: No reimbursement data found. Create one first or make a dummy here.";
     }
 
     // Ganti dengan email tujuan yang valid (misalnya, email Mailtrap Anda)

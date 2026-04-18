@@ -17,11 +17,11 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&family=Dancing+Script:wght@400;700&display=swap');
 
-    :root {
+    /* :root {
       --primary-color: #8b0000;
       --secondary-accent: #d97979;
       --background-gradient: linear-gradient(135deg, #f5e6e8 0%, #d5c4c6 100%);
-    }
+    } */
 
     body {
       background: #f8f5f5;
@@ -140,8 +140,7 @@
     }
 
     .nav-btn {
-      background-color: var(--primary-color);
-      color: white;
+      /* background-color: var(--primary-color); */
       border: none;
       padding: 10px 20px;
       margin: 0 10px;
@@ -152,12 +151,10 @@
     }
 
     .nav-btn:hover:not(:disabled) {
-      background-color: var(--secondary-accent);
       transform: translateY(-2px);
     }
 
     .nav-btn:disabled {
-      background-color: #ccc;
       cursor: not-allowed;
     }
 
@@ -460,6 +457,29 @@
       }
     /* === END PAGE 1 BACK === */
 
+    .editor-panel {
+      transition: all 0.4s ease;
+      position: relative;
+    }
+
+    /* Saat ditutup */
+    .editor-collapsed {
+      transform: translateX(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Button posisi */
+    .toggle-editor-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+
+    .preview-area {
+      transition: all 0.4s ease;
+    }
   </style>
 </head>
 
@@ -468,6 +488,10 @@
     <div class="row">
 
       <div class="col-xl-4 col-lg-5 editor-panel">
+        <button id="toggleEditorBtn" class="btn btn-sm btn-danger float-end mb-3 toggle-editor-btn">
+          ✕
+        </button>
+
         <h3 class="fw-bold mb-4 text-center">Editor Undangan</h3>
 
         <div class="editorSteps">
@@ -602,7 +626,8 @@
         <p class="text-muted text-center small mt-5">Auto Preview aktif • Perubahan tampil secara real-time</p>
       </div>
 
-      <div class="col-xl-8 col-lg-7 preview-area d-flex justify-content-center align-items-center">
+      {{-- <div class="col-xl-8 col-lg-7 preview-area d-flex justify-content-center align-items-center"> --}}
+      <div class="col-xl-8 col-lg-7 preview-area">
 
         <div class="book-container-wrapper">
           <div class="page-wrapper">
@@ -1047,10 +1072,10 @@
               </div>
 
               <div class="nav-buttons">
-                <button class="nav-btn" id="prevBtn" disabled>
+                <button class="nav-btn btn btn-secondary" id="prevBtn" disabled>
                   <i class="fas fa-chevron-left"></i>
                 </button>
-                <button class="nav-btn" id="nextBtn">
+                <button class="nav-btn btn btn-primary" id="nextBtn">
                   <i class="fas fa-chevron-right"></i>
                 </button>
               </div>
@@ -1065,6 +1090,37 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+  <script>
+    const toggleBtn = document.getElementById('toggleEditorBtn');
+    const editorPanel = document.querySelector('.editor-panel');
+    const previewArea = document.querySelector('.preview-area');
+
+    toggleBtn.addEventListener('click', function () {
+
+      editorPanel.classList.toggle('editor-collapsed');
+
+      const isCollapsed = editorPanel.classList.contains('editor-collapsed');
+
+      if (isCollapsed) {
+        toggleBtn.innerText = '☰ Buka Editor';
+        toggleBtn.classList.remove('btn-dark');
+        toggleBtn.classList.add('btn-primary');
+
+        // 👇 UBAH PREVIEW JADI FULL WIDTH
+        previewArea.classList.remove('col-xl-8', 'col-lg-7');
+        previewArea.classList.add('col-12', 'justify-content-center');
+
+      } else {
+        toggleBtn.innerText = '✕ Tutup Editor';
+        toggleBtn.classList.remove('btn-primary');
+        toggleBtn.classList.add('btn-dark');
+
+        // 👇 BALIKIN KE SEMULA
+        previewArea.classList.remove('col-12');
+        previewArea.classList.add('col-xl-8', 'col-lg-7');
+      }
+    });
+  </script>
 
   <script>
     const state = {
@@ -1072,7 +1128,7 @@
         groom: '',
         bride: '',
         tagline: '',
-        dates: '30 June 2026',
+        dates: '13 June 2026',
         nameSize: 25,
         font: "'Great Vibes', cursive",
         align: 'center',
@@ -1081,7 +1137,7 @@
         hearts: '♡ ♡ ♡'
       },
       pageBack1:{
-        event:"📍 Gedung Serbaguna Semper, Jakarta Utara<br>Jl. Raya Gereja Tugu No.78, RT.8/RW.6, Semper Bar., Kec. Cilincing, Jkt Utara, Daerah Khusus Ibukota Jakarta 14130",
+        event:"Gedung Serbaguna Semper, Jakarta Utara<br>Jl. Raya Gereja Tugu No.78, RT.8/RW.6, Semper Bar., Kec. Cilincing, Jkt Utara, Daerah Khusus Ibukota Jakarta 14130",
 
       }
     };
@@ -1089,53 +1145,54 @@
     /* =======================
       RENDER COVER (PAGE 1)
     ======================= */
-      function renderCover() {
-        previewGroomCover.innerText = state.cover.groom;
-        previewBrideCover.innerText = state.cover.bride;
-        previewTagline.innerText = state.cover.tagline;
-        previewDateCover.innerText = state.cover.dates;
+    function renderCover() {
+      previewGroomCover.innerText = state.cover.groom;
+      previewBrideCover.innerText = state.cover.bride;
+      previewTagline.innerText = state.cover.tagline;
+      previewDateCover.innerText = state.cover.dates;
 
-        document.querySelectorAll('.groom-name, .ambersand, .bride-name').forEach(el => {
-          el.style.fontSize = state.cover.nameSize + 'px';
-          el.style.fontFamily = state.cover.font;
-          el.style.textAlign = state.cover.align;
-        });
+      document.querySelectorAll('.groom-name, .ambersand, .bride-name').forEach(el => {
+        el.style.fontSize = state.cover.nameSize + 'px';
+        el.style.fontFamily = state.cover.font;
+        el.style.textAlign = state.cover.align;
+      });
 
-        document.querySelectorAll('[data-key="bow"]').forEach(el => {
-          el.innerText = state.cover.bow;
-          el.style.fontSize = state.cover.bowSize + 'px';
-        });
+      document.querySelectorAll('[data-key="bow"]').forEach(el => {
+        el.innerText = state.cover.bow;
+        el.style.fontSize = state.cover.bowSize + 'px';
+      });
 
-        const hearts = document.querySelector('[data-key="hearts"]');
-        if (hearts) hearts.innerText = state.cover.hearts;
-      }
+      const hearts = document.querySelector('[data-key="hearts"]');
+      if (hearts) hearts.innerText = state.cover.hearts;
+    }
 
     /* =======================
       RENDER CALENDAR (PAGE 1 Back)
     ======================= */
-      function renderPage1Back() {
-        previewGroomCover.innerText = state.pageBack1.groom;
-        previewBrideCover.innerText = state.pageBack1.bride;
-        previewTagline.innerText = state.pageBack1.tagline;
-        previewDateCover.innerText = state.pageBack1.dates;
+    function renderPage1Back() {
+      previewGroomCover.innerText = state.pageBack1.groom;
+      previewBrideCover.innerText = state.pageBack1.bride;
+      previewTagline.innerText = state.pageBack1.tagline;
+      previewDateCover.innerText = state.pageBack1.dates;
 
-        document.querySelectorAll('.groom-name, .ambersand, .bride-name').forEach(el => {
-          el.style.fontSize = state.pageBack1.nameSize + 'px';
-          el.style.fontFamily = state.pageBack1.font;
-          el.style.textAlign = state.pageBack1.align;
-        });
+      document.querySelectorAll('.groom-name, .ambersand, .bride-name').forEach(el => {
+        el.style.fontSize = state.pageBack1.nameSize + 'px';
+        el.style.fontFamily = state.pageBack1.font;
+        el.style.textAlign = state.pageBack1.align;
+      });
 
-        document.querySelectorAll('[data-key="bow"]').forEach(el => {
-          el.innerText = state.pageBack1.bow;
-          el.style.fontSize = state.pageBack1.bowSize + 'px';
-        });
+      document.querySelectorAll('[data-key="bow"]').forEach(el => {
+        el.innerText = state.pageBack1.bow;
+        el.style.fontSize = state.pageBack1.bowSize + 'px';
+      });
 
-        const hearts = document.querySelector('[data-key="hearts"]');
-        if (hearts) hearts.innerText = state.pageBack1.hearts;
-      }
+      const hearts = document.querySelector('[data-key="hearts"]');
+      if (hearts) hearts.innerText = state.pageBack1.hearts;
+    }
     /* =======================
       END RENDER CALENDAR (PAGE BACK)
     ======================= */
+
     function renderCalendar() {
 
       if (!state.cover.dates) return;
@@ -1242,15 +1299,13 @@
       DATE PICKER
     ======================= */
     $(function () {
-      $('#dateCoverInput')
-        .val(state.cover.dates)
-        .datepicker({
-          dateFormat: 'dd MM yy',
-          onSelect: function (dateText) {
-            state.cover.dates = dateText;
-            renderAll();
-          }
-        });
+      $('#dateCoverInput').val(state.cover.dates).datepicker({
+        dateFormat: 'dd MM yy',
+        onSelect: function (dateText) {
+          state.cover.dates = dateText;
+          renderAll();
+        }
+      });
     });
 
     renderAll();
@@ -1300,9 +1355,7 @@
         if (isAnimating) return;
         isAnimating = true;
 
-        $('.page')
-          .removeClass('is-center-pos flipped fade-in')
-          .addClass('hide');
+        $('.page').removeClass('is-center-pos flipped fade-in').addClass('hide');
 
         const isCentered = (pageNum === 0 || pageNum === totalPages);
 
