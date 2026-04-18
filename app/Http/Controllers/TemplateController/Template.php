@@ -15,10 +15,11 @@ class Template extends Controller
   public function wedding()
   {
     $data = [
-      'title' => 'Wedding of Idham & Riska'
+      'title' => 'Fill The Form',
+
     ];
 
-    return view('undangan_layout.idham_riska.flipbook.index',
+    return view('undangan_layout.form_undangan.form',
       compact('data'));
   }
 
