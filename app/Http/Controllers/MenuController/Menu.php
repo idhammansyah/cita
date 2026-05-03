@@ -14,11 +14,17 @@ class Menu extends Controller
 {
   public function index()
   {
+    $data = [
+      'title' => 'Menu Management',
+      'categories' => DB::table("menus_kategori")->where('is_active', 1)->orderBy('urutan')->get(),
+      'modules' => DB::table("modules")->where('is_deleted', 0)->get(),
+      'all_menus' => DB::table("menus")->where('is_active', 1)->orderBy('urutan')->get()
+    ];
     $categories = DB::table("menus_kategori")->where('is_active', 1)->orderBy('urutan')->get();
     $modules = DB::table("modules")->where('is_deleted', 0)->get();
     $all_menus = DB::table("menus")->where('is_active', 1)->orderBy('urutan')->get();
 
-    return view("menu_management.index", compact("categories", "modules", "all_menus"));
+    return view("menu_management.index", compact("categories", "modules", "all_menus", "data"));
   }
 
   public function getAll()
