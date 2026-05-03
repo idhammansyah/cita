@@ -36,6 +36,7 @@ class ListUndanganController extends Controller
 
     $query = list_undangan::from('tamu as lu')
     ->join('tamu_groups as g', 'g.id_group_tamu', '=', 'lu.id_groups')
+    ->join('weddings as w', 'w.id', '=', 'lu.wedding_id')
     ->where('lu.is_deleted', 0)
     ->select(
         'lu.id_tamu',
@@ -43,7 +44,8 @@ class ListUndanganController extends Controller
         'lu.phone',
         'lu.tamu_dari',
         'lu.address',
-        'g.nama_group_tamu as group_nama'
+        'g.nama_group_tamu as group_nama',
+        'w.slug'
     );
 
     // Search
@@ -51,12 +53,12 @@ class ListUndanganController extends Controller
 
       $search = $request->input('search.value');
 
-      $query->where('nama_tamu', 'LIKE', "%{$search}%")
-        ->orWhere('phone', 'LIKE', "%{$search}%")
-        ->orWhere('tamu_dari', 'LIKE', "%{$search}%")
-        ->orWhere('group_nama', 'LIKE', "%{$search}%")
-        ->orWhere('address', 'LIKE', "%{$search}%")
-        ->andWhere('is_deleted', 0);
+      $query->where('lu.nama_tamu', 'LIKE', "%{$search}%")
+        ->orWhere('lu.phone', 'LIKE', "%{$search}%")
+        ->orWhere('lu.tamu_dari', 'LIKE', "%{$search}%")
+        ->orWhere('lu.group_nama', 'LIKE', "%{$search}%")
+        ->orWhere('lu.address', 'LIKE', "%{$search}%")
+        ->andWhere('lu.is_deleted', 0);
 
       $totalFiltered = $query->count();
     }
@@ -155,13 +157,25 @@ class ListUndanganController extends Controller
 
   public function getWaData($id)
   {
-    $data = list_undangan::where('is_deleted', 0)->findOrFail($id);
+      // Ambil data lengkap: tamu + slug wedding + nama mempelai
+      $data = DB::table('tamu')
+        ->join('weddings', 'tamu.wedding_id', '=', 'weddings.id')
+        ->where('tamu.id_tamu', $id)
+        ->select(
+          'tamu.id_tamu',
+          'tamu.nama_tamu',
+          'tamu.phone',
+          'weddings.slug',
+          'weddings.m_pria_panggilan', // WAJIB ADA biar weddingName gak undefined
+          'weddings.m_wanita_panggilan' // WAJIB ADA biar weddingName gak undefined
+        )
+        ->first();
 
-    return response()->json([
-        'id' => $data->id_tamu,
-        'nama' => $data->nama_tamu,
-        'phone' => $data->phone,
-    ]);
+      if (!$data) {
+        return response()->json(['message' => 'Data tamu kagak ada, cok!'], 404);
+      }
+
+      return response()->json($data);
   }
 
   public function updateWaStatus(Request $request)
@@ -171,4 +185,36 @@ class ListUndanganController extends Controller
 
     return response()->json(['success' => true]);
   }
+
+  public function showInvitation($slug, $guest_name)
+  {
+    $wedding = $this->wedding::with(['stories', 'galleries'])
+        ->where('slug', $slug)
+        ->firstOrFail();
+
+    $decodedGuestName = urldecode($guest_name);
+
+    // 3. (Opsional) Cari data tamu di database kalau lo mau track siapa yang udah buka
+    $tamu = DB::table('tamu')
+    ->join('weddings', 'tamu.wedding_id', '=', 'weddings.id')
+    ->where('weddings.id', $wedding->id)
+    ->where('tamu.nama_tamu', $decodedGuestName)
+    ->select(
+        'tamu.*',
+        'weddings.slug',
+        'weddings.m_pria_panggilan',
+        'weddings.m_wanita_panggilan',
+        'weddings.tgl_akad'
+    )
+    ->first();
+
+    // 4. Lempar ke view
+    return view('undangan_layout.to_guests.index', [
+        'slug'  => $slug,
+        'wedding' => $wedding,
+        'nama_tamu' => $decodedGuestName,
+        'tamu' => $tamu
+    ]);
+  }
+
 }

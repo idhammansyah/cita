@@ -4,31 +4,25 @@ namespace App\Models\Undangan\Wedding;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Schema;
 
 class WeddingModel extends Model
 {
     protected $table = 'weddings';
 
-    protected $fillable = [
-        'slug',
-        'photo_pria',
-        'm_pria',
-        'm_pria_panggilan',
-        'm_pria_ayah',
-        'm_pria_ibu',
-        'photo_wanita',
-        'm_wanita',
-        'm_wanita_panggilan',
-        'm_wanita_ayah',
-        'm_wanita_ibu',
-        'tgl_akad',
-        'tgl_resepsi',
-        'lokasi_nama',
-        'lokasi_address',
-        'maps_url',
-        'music_url',
-        'quote_quran'
-    ];
+    protected $fillable = [];
+
+  public function __construct(array $attributes = [])
+  {
+    parent::__construct($attributes);
+
+    $this->fillable = $this->getAllowedFields();
+  }
+
+  protected function getAllowedFields()
+  {
+    return Schema::getColumnListing($this->getTable());
+  }
 
     /**
      * Relasi ke table stories_undangan

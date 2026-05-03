@@ -135,20 +135,31 @@
             let sentAttr = isSent ? 'data-sent="1"' : '';
 
             return `
-            <button class="btn btn-sm btn-warning edit" data-id="${row.id_tamu}">
-              Edit
-            </button>
+              <div class="d-flex flex-wrap gap-1 justify-content-center">
+                  <!-- Button View -->
+                  <a href="/wedding/${row.slug}/invitation/to/${encodeURIComponent(row.nama_tamu)}" target="_blank" class="btn btn-sm btn-outline-info" title="Lihat Undangan">
+                      <i class="bi bi-eye"></i>
+                  </a>
 
-            <button class="btn btn-sm btn-danger delete" data-id="${row.id_tamu}">
-              Hapus
-            </button>
+                  <!-- Button Edit -->
+                  <button type="button" class="btn btn-sm btn-outline-warning edit" data-id="${row.id_tamu}" title="Edit Tamu">
+                      <i class="bi bi-pencil-square"></i>
+                  </button>
 
-            <button class="btn btn-sm btn-info send-wa row-send"
-                data-id="${row.id_tamu}"
-                ${sentAttr}
-                ${disabled}>
-              Kirim
-            </button>
+                  <!-- Button Kirim WA -->
+                  <button type="button" class="btn btn-sm btn-success send-wa row-send"
+                      data-id="${row.id_tamu}"
+                      ${sentAttr}
+                      ${disabled}
+                      title="Kirim WhatsApp">
+                      <i class="bi bi-whatsapp"></i>
+                  </button>
+
+                  <!-- Button Hapus -->
+                  <button type="button" class="btn btn-sm btn-outline-danger delete" data-id="${row.id_tamu}" title="Hapus Tamu">
+                      <i class="bi bi-trash"></i>
+                  </button>
+              </div>
           `;
           }
         }
@@ -192,30 +203,55 @@
 
   });
 
-  $(document).on('click', '.send-wa', function () {
 
+  // Pastikan selector-nya sesuai dengan class tombol kirim lo
+  $(document).on('click', '.send-wa', function() {
     let button = $(this);
     let id = button.data('id');
 
     $.get("/wa/" + id, function (data) {
+        console.log("Data Lengkap:", data); // Cek di sini, m_pria_panggilan muncul gak?
 
-      let phone = data.phone.replace(/^0/, '62');
+        if (!data.slug) {
+            alert("Slug wedding-nya gak ketemu bray!");
+            return;
+        }
 
-      let message =
-        `Halo ${data.nama},
+        let phone = data.phone.replace(/^0/, '62');
+        let baseUrl = window.location.origin;
 
-        Kami mengundang Anda untuk menghadiri acara kami.
+        // Nama untuk URL (pake encode) vs Nama untuk Teks (asli)
+        let guestNameUrl = encodeURIComponent(data.nama_tamu);
+        let guestNameText = data.nama_tamu;
 
-        Terima kasih 🙏`;
+        let weddingLink = `${baseUrl}/wedding/${data.slug}/invitation/to/${guestNameUrl}`;
+        let weddingName = `${data.m_pria_panggilan} & ${data.m_wanita_panggilan}`;
 
-      let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+        // Susun pesan rapat kiri biar gak ada spasi liar di WA
+        let message = `Kepada Yth.
+Bapak/Ibu/Saudara/i
+*${guestNameText}*
+_______
 
-      window.open(url, '_blank');
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami.
 
-      button.prop('disabled', true);
+Berikut link undangan kami, untuk info lengkap dari acara, bisa kunjungi :
 
+${weddingLink}
+
+Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
+
+Terima Kasih
+
+Hormat kami,
+${weddingName}
+________`;
+
+        let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+        window.open(url, '_blank');
+
+        button.prop('disabled', true).addClass('btn-secondary');
     });
-
   });
 
   $('#bulkSend').click(function () {
