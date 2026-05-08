@@ -26,8 +26,8 @@ class Template extends Controller
       'slug' => 'required|unique:weddings,slug',
       'm_pria' => 'required',
       'm_wanita' => 'required',
-      'foto_pria' => 'nullable|image|max:2048',
-      'foto_wanita' => 'nullable|image|max:2048',
+      'foto_pria' => 'nullable|image|max:5048',
+      'foto_wanita' => 'nullable|image|max:5048',
       'music_file' => 'nullable|mimes:mp3,mpeg|max:10120',
     ]);
 

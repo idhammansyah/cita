@@ -8,8 +8,10 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{asset('assets/css/styles.css')}}">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
 </head>
 
 <body>
@@ -47,7 +49,9 @@
     <!-- HERO -->
     <div class="hero text-white text-center" id="hero">
       <h1 data-aos="zoom-in">{{ $wedding->m_pria_panggilan }} & {{ $wedding->m_wanita_panggilan }}</h1>
-      <p data-aos="fade-up">{{ \Carbon\Carbon::parse($wedding->tgl_akad)->translatedFormat('l, d F Y') }}</p>
+      <p data-aos="fade-up">
+        {{ \Carbon\Carbon::parse($wedding->tgl_akad)->translatedFormat('l, d F Y') }}
+      </p>
       <div class="mt-4" data-aos="fade-up" data-aos-delay="200">
         <a href="https://www.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+{{ $wedding->m_pria_panggilan }}+%26+{{ $wedding->m_wanita_panggilan }}&dates={{ \Carbon\Carbon::parse($wedding->tgl_akad)->format('Ymd\THis\Z') }}"
           target="_blank" class="btn btn-light">
@@ -65,20 +69,22 @@
       </p>
       <div class="row mt-5">
         <div class="col-md-6" data-aos="fade-right">
-          <img src="{{ asset($wedding->foto_pria) }}" class="img-fluid rounded-circle mb-3" width="200" style="height:200px; object-fit:cover;">
+          <img src="{{ asset($wedding->foto_pria) }}" class="img-fluid rounded-circle mb-3" width="200"
+            style="height:200px; object-fit:cover;">
           <h4>{{ $wedding->m_pria }}</h4>
           <p>
-            Putra ke-2 dari<br>
+            Putra ke-{{ $wedding->m_pria_anak_ke }} dari<br>
             Bapak {{ $wedding->m_pria_ayah }}<br>
             & Ibu {{ $wedding->m_pria_ibu }}
           </p>
         </div>
 
         <div class="col-md-6" data-aos="fade-left">
-          <img src="{{ asset($wedding->foto_wanita) }}" class="img-fluid rounded-circle mb-3" width="200" style="height:200px; object-fit:cover;">
+          <img src="{{ asset($wedding->foto_wanita) }}" class="img-fluid rounded-circle mb-3" width="200"
+            style="height:200px; object-fit:cover;">
           <h4>{{ $wedding->m_wanita }}</h4>
           <p>
-            Putri ke-1 dari<br>
+            Putri ke-{{ $wedding->m_wanita_anak_ke }} dari<br>
             Bapak {{ $wedding->m_wanita_ayah }}<br>
             & Ibu {{ $wedding->m_wanita_ibu }}
           </p>
@@ -90,23 +96,29 @@
     <div class="container py-5 text-center">
       <h2 data-aos="fade-up">Ayat Suci</h2>
       <div class="mt-4" data-aos="fade-up">
-        {!! $wedding->quote_quran !!} <!-- RENDER HTML DARI CKEDITOR -->
+        {!! $wedding->quote_quran !!}
+        <!-- RENDER HTML DARI CKEDITOR -->
       </div>
     </div>
 
     <!-- LOVE STORY (LOOPING DARI TABLE STORIES) -->
     <div class="container py-5" id="story">
       <h2 class="text-center mb-5">Love Story</h2>
-      <div class="timeline">
-        @foreach($wedding->stories as $index => $story)
+      {{-- <div class="timeline">
+@foreach($wedding->stories as $index => $story)
         <div class="timeline-item" data-aos="{{ $index % 2 == 0 ? 'fade-right' : 'fade-left' }}">
-          <div class="timeline-content">
-            <h5>{{ $story->year }} - {{ $story->title_moment }}</h5>
-            <p>{{ $story->cerita }}</p>
-          </div>
-        </div>
-        @endforeach
+      <div class="timeline-content">
+        <h5>{{ $story->year }} - {{ $story->title_moment }}</h5>
+        <p>{{ $story->cerita }}</p>
       </div>
+    </div>
+    @endforeach
+    </div> --}}
+    @foreach($wedding->stories as $index => $story)
+      <p class="card-text text-muted text-center" style="line-height: 1.8; font-style: italic; font-size: 1.05rem;">
+        "{{ $story->cerita }}"
+      </p>
+    @endforeach
     </div>
 
     <!-- MOMEN BAHAGIA -->
@@ -124,8 +136,9 @@
         <div class="col-md-6" data-aos="fade-left">
           <h4>Resepsi</h4>
           <p>
-            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->translatedFormat('l, d F Y') }}<br>
-            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->format('H:i') }} WIB - Selesai
+            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->translatedFormat('l, d F Y') }}<br>
+            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->format('H:i') }} WIB -
+            Selesai
           </p>
         </div>
       </div>
@@ -142,11 +155,11 @@
       <h2 data-aos="fade-up">Lokasi Acara</h2>
       <p><b>{{ $wedding->lokasi_nama }}</b><br>{{ $wedding->lokasi_address }}</p>
 
-      <iframe src="{{$wedding->maps_url}}" width="100%" height="350"
-        style="border:0;border-radius:12px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <iframe src="{{ $wedding->maps_url }}" width="100%" height="350" style="border:0;border-radius:12px;"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
       <div class="mt-4">
-        <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($wedding->lokasi_address) }}" target="_blank" class="btn btn-dark">
+        <a href="{{ $wedding->maps_url }}" target="_blank" class="btn btn-dark">
           Buka Google Maps
         </a>
       </div>
@@ -158,19 +171,11 @@
 
       <div class="masonry-gallery">
         @foreach($wedding->galleries as $gallery)
-        <div class="gallery-card" data-aos="zoom-in">
-          <img src="{{ asset($gallery->image_path) }}" class="gallery-img">
-        </div>
+          <div class="gallery-card" data-aos="zoom-in">
+            <img src="{{ asset($gallery->image_path) }}" class="gallery-img">
+          </div>
         @endforeach
       </div>
-    </div>
-
-    <!-- LOVE GIFT -->
-    <div class="container py-5 text-center">
-      <h2 data-aos="fade-up">Love Gift</h2>
-      <p data-aos="fade-up">
-        Doa restu Anda merupakan karunia yang sangat berarti bagi kami.
-      </p>
     </div>
 
     <!-- RSVP -->
@@ -223,12 +228,12 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>
-    window.sakuraPath = "{{ asset('assets/img/flower/sakura.png')}}";
+    window.sakuraPath = "{{ asset('assets/img/flower/sakura.png') }}";
     AOS.init();
 
     // Timer Countdown Dinamis
     const targetDate = new Date($("#countdown").data("time")).getTime();
-    setInterval(function() {
+    setInterval(function () {
       const now = new Date().getTime();
       const diff = targetDate - now;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -237,8 +242,10 @@
       const secs = Math.floor((diff % (1000 * 60)) / 1000);
       $("#countdown").html(`${days}h : ${hours}j : ${mins}m : ${secs}d`);
     }, 1000);
+
   </script>
-  <script src="{{asset('assets/js/script.js')}}"></script>
+  <script src="{{ asset('assets/js/script.js') }}"></script>
 
 </body>
+
 </html>

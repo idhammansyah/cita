@@ -377,7 +377,7 @@
       }
 
       // Validasi ukuran file (misal maks 2MB)
-      if (input.files[0].size > 2 * 1024 * 1024) {
+      if (input.files[0].size > 2 * 1024 * 1024 * 1024) {
         alert('Ukuran file maksimal adalah 2MB.');
         $(this).val('');
         return false;
