@@ -1,5 +1,8 @@
-$(document).ready(function () {
+/* ============================================================
+   WEDDING JS FULL VERSION
+   ============================================================ */
 
+$(document).ready(function () {
   initGuestName();
   initEnvelope();
   initMusic();
@@ -7,114 +10,87 @@ $(document).ready(function () {
   initCountdown();
   initSakura();
   initGallery();
-
   initFloatingNav();
 });
 
-
 /* =========================
-AMBIL NAMA TAMU
+AMBIL NAMA TAMU DARI URL
 ========================= */
-
 function initGuestName() {
-
   const params = new URLSearchParams(window.location.search);
   const guest = params.get('to');
-
   if (guest) {
     $("#guestName").text(guest);
+    $("#nama").val(guest); // Set otomatis di input RSVP juga
   }
-
 }
 
-
 /* =========================
-BUKA AMPLOP
+BUKA AMPLOP & INISIALISASI AOS
 ========================= */
-
 function initEnvelope() {
-
   $("#openBtn").one("click", function () {
-
     const envelope = $(".envelope");
-    const envelope_content = $("#envelope-content");
 
-    // buka amplop
+    // 1. Jalankan animasi buka amplop
     envelope.addClass("open");
-
-    // hilangkan seal
     $(".seal").fadeOut(400);
 
-    // tunggu animasi flap + letter
+    // 2. Transisi Cover ke Konten Utama
     setTimeout(function () {
-
       $("#cover").fadeOut(800, function () {
+        // Tampilkan konten utama dengan fadeIn
+        $("#invitation").fadeIn(1000, function () {
 
-        $("#invitation").fadeIn(800, function () {
-
+          // 3. INISIALISASI AOS (PENTING: Di dalam callback fadeIn)
           AOS.init({
-            duration: 1200,
-            easing: "ease-in-out-cubic",
+            duration: 1000,
+            easing: "ease-in-out",
             once: true,
-            offset: 120
+            offset: 120,
+            mirror: false
           });
 
+          // Paksa refresh agar posisi elemen dihitung ulang
+          AOS.refresh();
         });
-
       });
-
     }, 1200);
 
     playMusic();
-
   });
-
 }
 
-
 /* =========================
-MUSIC
+MUSIC CONTROL
 ========================= */
-
-let music = document.getElementById("music");
+const music = document.getElementById("music");
 
 function playMusic() {
-
   if (music) {
-    music.play().catch(() => {});
+    music.play().catch(() => {
+      console.log("Autoplay ditahan browser, menunggu interaksi.");
+    });
   }
-
 }
 
 function initMusic() {
-
   $("#musicBtn").click(function () {
-
     if (music.paused) {
-
       music.play();
       $(this).removeClass("off");
-
     } else {
-
       music.pause();
       $(this).addClass("off");
-
     }
-
   });
-
 }
 
-
 /* =========================
-RSVP GUESTBOOK
+RSVP & GUESTBOOK
 ========================= */
-
 function initRSVP() {
-
   $("#rsvpForm").submit(function (e) {
-
     e.preventDefault();
 
     const nama = $("#nama").val().trim();
@@ -122,49 +98,48 @@ function initRSVP() {
     const ucapan = $("#ucapan").val().trim();
 
     if (!nama || !ucapan) {
-
-      alert("Isi nama dan ucapan dulu ya");
+      alert("Harap isi nama dan ucapan Anda.");
       return;
-
     }
 
+    // Contoh sederhana penambahan ucapan ke list
     const html = `
-      <div class="guest-item" data-aos="fade-up">
-        <b>${nama}</b> (${hadir})
-        <p>${ucapan}</p>
-      </div>
-    `;
+            <div class="guest-item" data-aos="fade-up">
+                <b>${nama}</b> <small class="text-muted">(${hadir})</small>
+                <p>${ucapan}</p>
+            </div>
+        `;
 
-    $("#guestbook").prepend(html);
-
-    AOS.refresh();
+    if ($("#guestbook").length) {
+      $("#guestbook").prepend(html);
+      AOS.refresh(); // Refresh AOS untuk elemen baru
+    } else {
+      alert("Terima kasih atas ucapannya!");
+    }
 
     $("#rsvpForm")[0].reset();
-
   });
-
 }
 
-
 /* =========================
-COUNTDOWN
+COUNTDOWN DINAMIS
 ========================= */
-
 function initCountdown() {
+  const $countdown = $("#countdown");
+  const targetDateStr = $countdown.data("time"); // Ambil dari attribute data-time di HTML
 
-  const target = new Date("June 13, 2026 08:00:00").getTime();
+  if (!targetDateStr) return;
+
+  const target = new Date(targetDateStr).getTime();
 
   const timer = setInterval(function () {
-
     const now = new Date().getTime();
     const distance = target - now;
 
     if (distance < 0) {
-
       clearInterval(timer);
-      $("#countdown").html("Hari Bahagia Telah Tiba ❤️");
+      $countdown.html("Hari Bahagia Telah Tiba ❤️");
       return;
-
     }
 
     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -172,39 +147,38 @@ function initCountdown() {
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    $("#countdown").html(
+    $countdown.html(
       `${days} Hari ${hours} Jam ${minutes} Menit ${seconds} Detik`
     );
-
   }, 1000);
-
 }
-
 
 /* =========================
 SAKURA EFFECT
 ========================= */
-
 function initSakura() {
-
-  setInterval(createSakura, 1000);
-
+  if ($(".sakura-container").length) {
+    setInterval(createSakura, 1000);
+  }
 }
 
 function createSakura() {
-
   const size = Math.random() * 20 + 10;
   const startPos = Math.random() * window.innerWidth;
   const duration = Math.random() * 5 + 6;
 
   const sakura = $(`
-    <img src="${window.sakuraPath}" class="sakura">
-  `);
+      <img src="${window.sakuraPath}" class="sakura">
+    `);
 
   sakura.css({
     left: startPos + "px",
     width: size + "px",
-    animationDuration: duration + "s"
+    animationDuration: duration + "s",
+    position: "fixed",
+    top: "-50px",
+    zIndex: "9999",
+    pointerEvents: "none" // Penting agar tidak menghalangi klik
   });
 
   $(".sakura-container").append(sakura);
@@ -212,75 +186,54 @@ function createSakura() {
   setTimeout(function () {
     sakura.remove();
   }, 11000);
-
 }
-
 
 /* =========================
 GALLERY LIGHTBOX
 ========================= */
-
 function initGallery() {
-
   $(".gallery-img").click(function () {
-
     const src = $(this).attr("src");
-
     $("#lightbox-img").attr("src", src);
     $("#lightbox").fadeIn();
-
   });
 
   $("#lightbox").click(function () {
-
     $(this).fadeOut();
-
   });
-
 }
 
 /* =========================
 FLOATING NAV AUTO ACTIVE
 ========================= */
-
 function initFloatingNav() {
-
-  const sections = $("section, #hero, #mempelai, #story, #gallery");
-
+  const sections = $("#hero, #mempelai, #story, #gallery, #rsvp");
   const navLinks = $(".floating-nav a");
 
   $(window).on("scroll", function () {
-
     let current = "";
+    const scrollPos = $(window).scrollTop();
 
     sections.each(function () {
-
-      const sectionTop = $(this).offset().top - 150;
-      const sectionHeight = $(this).outerHeight();
-
-      if ($(window).scrollTop() >= sectionTop) {
+      const sectionTop = $(this).offset().top - 200;
+      if (scrollPos >= sectionTop) {
         current = $(this).attr("id");
       }
-
     });
 
     navLinks.removeClass("active");
-
-    $('.floating-nav a[href="#' + current + '"]').addClass("active");
-
+    if (current) {
+      $(`.floating-nav a[href="#${current}"]`).addClass("active");
+    }
   });
 }
 
-
-
 /* =========================
-AOS REFRESH
+AOS FORCE REFRESH ON LOAD
 ========================= */
-
 $(window).on("load", function () {
-
+  // Hanya refresh jika AOS sudah pernah di-init
   if (typeof AOS !== "undefined") {
-    AOS.refreshHard();
+    AOS.refresh();
   }
-
 });

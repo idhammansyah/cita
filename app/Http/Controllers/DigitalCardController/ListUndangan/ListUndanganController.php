@@ -188,13 +188,17 @@ class ListUndanganController extends Controller
 
   public function showInvitation($slug, $guest_name)
   {
-    $wedding = $this->wedding::with(['stories', 'galleries'])
-        ->where('slug', $slug)
-        ->firstOrFail();
+    $wedding = $this->wedding->with(['stories' => function($query)
+      {
+        $query->where('is_deleted', 0);
+      },
+      'galleries' => function($query)
+      {
+        $query->where('is_deleted', 0);
+      }])->where('slug', $slug)->firstOrFail();
 
-    $decodedGuestName = urldecode($guest_name);
+    $decodedGuestName = str_replace(['+', '%20'], ' ', urldecode($guest_name));
 
-    // 3. (Opsional) Cari data tamu di database kalau lo mau track siapa yang udah buka
     $tamu = DB::table('tamu')
     ->join('weddings', 'tamu.wedding_id', '=', 'weddings.id')
     ->where('weddings.id', $wedding->id)
@@ -217,4 +221,38 @@ class ListUndanganController extends Controller
     ]);
   }
 
+  public function storeUcapan(Request $request, $slug, $guest_name)
+  {
+    try {
+      $request->validate([
+        'wedding_id' => 'required',
+        'nama_tamu' => 'required',
+        'kehadiran' => 'required',
+        'ucapan' => 'required',
+      ]);
+
+      $data = [
+        'wedding_id' => $request->wedding_id,
+        'nama_tamu'  => $request->nama_tamu,
+        'kehadiran'  => $request->kehadiran,
+        'ucapan'     => $request->ucapan,
+        'created_at' => now(),
+      ];
+
+      // Ganti 'ucapan_undangan' sesuai nama table lu
+      DB::table('rsvps')->insert($data);
+
+      return response()->json([
+        'status' => 'success',
+        'data' => [
+          'nama' => $request->nama_tamu,
+          'kehadiran' => $request->kehadiran,
+          'ucapan' => $request->ucapan,
+          'waktu' => 'Baru saja'
+        ]
+      ]);
+    } catch (\Exception $e) {
+      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+  }
 }

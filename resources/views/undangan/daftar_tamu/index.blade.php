@@ -255,46 +255,51 @@ ________`;
   });
 
   $('#bulkSend').click(function () {
-
     let ids = $('.wa-check:checked').map(function () {
-      return $(this).val();
+        return $(this).val();
     }).get();
 
     if (ids.length === 0) {
-      swal.fire('Tidak ada yang dipilih', '', 'warning');
-      return;
+        Swal.fire('Tidak ada yang dipilih', '', 'warning');
+        return;
     }
 
     let delay = 0;
+    let baseUrl = window.location.origin;
 
     ids.forEach(function (id) {
+        setTimeout(function () {
+            $.get("/wa/" + id, function (data) {
+                if (data.slug) {
+                    let phone = data.phone.replace(/^0/, '62');
+                    let guestNameUrl = encodeURIComponent(data.nama_tamu);
+                    let guestNameText = data.nama_tamu;
+                    let weddingLink = `${baseUrl}/wedding/${data.slug}/invitation/to/${guestNameUrl}`;
+                    let weddingName = `${data.m_pria_panggilan} & ${data.m_wanita_panggilan}`;
 
-      setTimeout(function () {
+                    // Pesan yang sama dengan tombol satuan
+                    let message = `Kepada Yth.
+Bapak/Ibu/Saudara/i
+*${guestNameText}*
+_______
 
-        $.get("/wa/" + id, function (data) {
+Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami.
 
-          let phone = data.phone.replace(/^0/, '62');
+Info lengkap acara klik link:
+${weddingLink}
 
-          let message =
-            `Halo ${data.nama},
+Terima Kasih.
+Hormat kami,
+${weddingName}`;
 
-            Kami mengundang Anda untuk menghadiri acara kami.
-
-            Terima kasih 🙏`;
-
-          let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
-
-          window.open(url, '_blank');
-
-        });
-
-      }, delay);
-
-      delay += 5000; // 5 detik jeda
-
+                    let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+                    window.open(url, '_blank');
+                }
+            });
+        }, delay);
+        delay += 5000; // Jeda 5 detik biar gak dianggap spam sama browser/WA
     });
-
-  });
+});
 
   $(document).on('click', '.delete', function () {
 

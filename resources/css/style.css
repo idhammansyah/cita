@@ -65,22 +65,22 @@ body {
   transform-style: preserve-3d;
 }
 
-.envelope-content{
-  position:absolute;
-  top:75%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  z-index:2;
-  width:80%;
-  transition:all .5s ease;
+.envelope-content {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+  width: 80%;
+  transition: all .5s ease;
 }
 
 /* Saat amplop dibuka */
-.envelope.open .envelope-content{
-  opacity:0;
-  transform:translate(-50%,-30%);
-  pointer-events:none;
+.envelope.open .envelope-content {
+  opacity: 0;
+  transform: translate(-50%, -30%);
+  pointer-events: none;
 }
 
 
@@ -437,7 +437,7 @@ h2::after {
 
 .floating-nav {
   position: fixed;
-  bottom: 30px;
+  bottom: 10px !important;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(255, 255, 255, .9);
@@ -554,4 +554,60 @@ h2::after {
     font-size: 18px;
   }
 
+}
+
+.rsvp-section {
+  background: #ffffff;
+  /* Sesuaikan dengan tema lu */
+  border-radius: 20px;
+}
+
+/* Menyamakan tinggi kolom */
+.row-equal {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Box Form & Box Ucapan */
+.rsvp-box,
+.guestbook-box {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+}
+
+.guestbook-box {
+  background: #fdfdfd;
+  /* Warna beda tipis biar ada pemisah */
+  border-radius: 15px;
+  border: 1px solid #f1f1f1;
+}
+
+/* List ucapan tanpa card, pakai border bottom aja */
+.ucapan-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.ucapan-item:last-child {
+  border-bottom: none;
+}
+
+/* Scrollbar estetik */
+.ucapan-list-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 400px;
+  /* Atur biar gak terlalu panjang */
+  padding-right: 10px;
+}
+
+.ucapan-list-wrapper::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ucapan-list-wrapper::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
 }

@@ -103,11 +103,18 @@
                   <td>{{ \Carbon\Carbon::parse($item->tgl_akad)->format('d M Y') }}
                   </td>
                   <td>
-                    <a href="{{ route('undanganku', $item->slug) }}" class="btn btn-sm btn-info">
+                    <a href="{{ route('undanganku', $item->slug) }}"
+                      class="btn btn-sm btn-info">
                       View
                     </a> |
-                    <a href="" class="btn btn-sm btn-warning">Edit</a> |
-                    <button type="button" class="btn btn-sm btn-danger delete-wedding-btn" data-id="" data-name="">
+                    <button class="btn btn-sm btn-warning btn-edit-wedding"
+                          data-id="{{ $item->id }}"
+                          data-bs-toggle="modal"
+                          data-bs-target="#editForm">
+                      Edit
+                  </button> |
+                    <button type="button" class="btn btn-sm btn-danger delete-wedding-btn" data-id="{{ $item->id }}"
+                      data-name="{{ $item->m_pria_panggilan }} & {{ $item->m_wanita_panggilan }}">
                       Delete
                     </button>
 
@@ -123,10 +130,12 @@
   </div>
 </section>
 @endsection
+
 @include('undangan_layout.form_undangan.modal.modal_add')
+@include('undangan_layout.form_undangan.modal.modal_edit')
 @section('scripts')
 <script>
-  $(document).ready(function () {
+  $(document).ready(function (){
     // Inisialisasi DataTables
     $('#weddingTable').DataTable({
       "paging": true,
@@ -152,6 +161,10 @@
       }
     });
   });
+
+</script>
+
+<script>
 
 </script>
 @endsection

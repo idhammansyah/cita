@@ -17,6 +17,10 @@ use App\Models\Reimbursement\ReimbursementEmployee;
 use App\Http\Controllers\TemplateController\Template as template_layout;
 use App\Http\Controllers\DigitalCardController\ListUndangan\ListUndanganController as list_undangan;
 
+
+Route::get('/wedding-of/{slug}/invitation/to/{guest_name}', [list_undangan::class, 'showInvitation']);
+Route::post('/wedding-of/{slug}/invitation/to/{guest_name}', [list_undangan::class, 'storeUcapan'])->name('store.ucapan');
+
 // Route::get('/', [AuthController::class, 'v_login']);
 Route::get('/login', [AuthController::class, 'v_login'])->name('login');
 Route::post('/attempt-login', [AuthController::class, 'attemptlogin'])->name('attemptlogin');
@@ -82,6 +86,8 @@ Route::middleware(['auth', 'module.access', 'role:1,2,3'])->group(function ()
 
   // routes for edit layout wedding invitation idham & riska
   Route::get('/data/invitation/wedding', [template_layout::class, 'wedding'])->name('wedding');
+  Route::get('/wedding/edit/{id}', [template_layout::class, 'edit'])->name('wedding.edit');
+  Route::put('/wedding/update/{id}', [template_layout::class, 'update'])->name('wedding.update');
   Route::get('/invitation/{slug}', [template_layout::class, 'invitation'])->name('undanganku');
   Route::post('/save/invitation', [template_layout::class, 'save_data'])->name('save.undangan');
 

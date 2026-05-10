@@ -11,6 +11,17 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
     rel="stylesheet">
+  <style>
+    #invitation {
+      display: none;
+    }
+
+    /* Mencegah scroll saat amplop masih tertutup */
+    body.modal-open {
+      overflow: hidden;
+    }
+
+  </style>
   <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
 </head>
 
@@ -137,7 +148,8 @@
           <h4>Resepsi</h4>
           <p>
             {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->translatedFormat('l, d F Y') }}<br>
-            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->format('H:i') }} WIB -
+            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->format('H:i') }}
+            WIB -
             Selesai
           </p>
         </div>
@@ -180,19 +192,49 @@
 
     <!-- RSVP -->
     <div class="container py-5" id="rsvp">
-      <h2 class="text-center mb-4">RSVP & Ucapan</h2>
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <form id="rsvpForm">
-            <input type="text" class="form-control mb-3" value="{{ $nama_tamu }}" readonly id="nama">
-            <select class="form-control mb-3" id="kehadiran">
-              <option value="">Konfirmasi Kehadiran</option>
-              <option>Hadir</option>
-              <option>Tidak Hadir</option>
-            </select>
-            <textarea class="form-control mb-3" placeholder="Ucapan" id="ucapan"></textarea>
-            <button class="btn btn-dark w-100">Kirim</button>
-          </form>
+      <div class="rsvp-section p-4" data-aos="fade-up">
+        <h2 class="text-center mb-5 fw-bold">RSVP & Ucapan</h2>
+        <div class="row row-equal justify-content-center">
+          <div class="col-md-6 border-end-md">
+            <div class="rsvp-box">
+              <form id="rsvpForm">
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Nama Tamu</label>
+                  <input type="text" class="form-control form-control-lg bg-light border-0" value="{{ $nama_tamu }}"
+                    readonly id="nama">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Konfirmasi Kehadiran</label>
+                  <select class="form-select form-control-lg border-0 bg-light" id="kehadiran" required>
+                    <option value="" disabled>-- Pilih Kehadiran --</option>
+                    <option value="Hadir">Hadir</option>
+                    <option value="Tidak Hadir">Tidak Hadir</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Ucapan & Doa</label>
+                  <textarea class="form-control border-0 bg-light" placeholder="Tulis doa restu Anda..." id="ucapan"
+                    rows="4" required></textarea>
+                </div>
+
+                <button type="submit" id="btnKirim" class="btn btn-dark w-100 fw-bold py-3 rounded-3 shadow-sm">Kirim
+                  Ucapan</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="guestbook-box">
+              <h6 class="fw-bold mb-4 d-flex align-items-center">
+                <i class="bi bi-chat-heart text-danger me-2" style="font-size: 1.2rem;"></i>
+                Doa & Ucapan Tamu
+              </h6>
+              <div id="ucapanList" class="ucapan-list-wrapper" style="max-height: 400px; overflow-y: auto;">
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -202,10 +244,12 @@
       <h2 data-aos="fade-up">Terima Kasih</h2>
       <p data-aos="fade-up">
         Merupakan suatu kehormatan bagi kami apabila
-        Bapak/Ibu/Saudara/i berkenan hadir.
-      </p>
+        Bapak/Ibu/Saudara/i berkenan hadir. Kami ucapkan terima kasih atas doa dan dukungan yang diberikan kepada kami.
+        <br><br>
 
-      <h4 class="mt-4">{{ $wedding->m_pria_panggilan }} & {{ $wedding->m_wanita_panggilan }}</h4>
+        <b>{{ $wedding->m_pria_panggilan }} & {{ $wedding->m_wanita_panggilan }}</b> <br>
+        <small class="text-muted mb-5">Created by Idham Mansyah Awwalu</small>
+      </p>
     </div>
 
     <!-- FLOATING NAV -->
@@ -227,24 +271,104 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js "></script>
+  <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.min.css " rel="stylesheet">
   <script>
     window.sakuraPath = "{{ asset('assets/img/flower/sakura.png') }}";
-    AOS.init();
-
-    // Timer Countdown Dinamis
-    const targetDate = new Date($("#countdown").data("time")).getTime();
-    setInterval(function () {
-      const now = new Date().getTime();
-      const diff = targetDate - now;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const secs = Math.floor((diff % (1000 * 60)) / 1000);
-      $("#countdown").html(`${days}h : ${hours}j : ${mins}m : ${secs}d`);
-    }, 1000);
 
   </script>
   <script src="{{ asset('assets/js/script.js') }}"></script>
+
+  <script>
+    $(document).ready(function () {
+      $('#rsvpForm').on('submit', function (e) {
+        e.preventDefault();
+
+        // 1. Ambil data
+        const btn = $('#btnKirim');
+        const weddingId = "{{ $wedding->id }}";
+        const nama = $('#nama').val();
+        const kehadiran = $('#kehadiran').val();
+        const ucapan = $(this).find('#ucapan').val();
+
+        // Debugging: Cek di console log (F12)
+        console.log("Mengirim data:", {
+          weddingId,
+          nama,
+          kehadiran,
+          ucapan
+        });
+
+        if (!kehadiran) {
+          swal.fire('Opps!', 'Pilih status kehadiran dulu bray.', 'warning');
+          return;
+        }
+
+        // 2. Loading State
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Mengirim...');
+
+        // 3. AJAX Request
+        $.ajax({
+          url: "{{ route('store.ucapan', ['slug' => $wedding->slug, 'guest_name' => $nama_tamu]) }}",
+          type: "POST",
+          data: {
+            _token: "{{ csrf_token() }}",
+            wedding_id: weddingId,
+            nama_tamu: nama,
+            kehadiran: kehadiran,
+            ucapan: ucapan
+          },
+          success: function (response) {
+            if (response.status === 'success') {
+              // Reset Form
+              $('#ucapan').val('');
+              $('#kehadiran').val('').trigger('change');
+
+              // Template Ucapan Baru
+              let badgeClass = response.data.kehadiran === 'Hadir' ? 'bg-success-subtle text-success' :
+                'bg-danger-subtle text-danger';
+
+              let newUcapan = `
+                        <div class="card mb-3 shadow-sm border-0 animate__animated animate__fadeInDown" style="border-radius: 12px;">
+                            <div class="card-body">
+                                <div class="ucapan-item">
+                                    <div class="d-flex justify-content-between">
+                                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">${response.data.nama}</h6>
+                                        <span class="badge ${badgeClass} rounded-pill" style="font-size: 0.7rem;">${response.data.kehadiran}</span>
+                                    </div>
+                                    <p class="text-muted small mb-1">${response.data.ucapan}</p>
+                                    <small class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-clock me-1"></i>Baru saja</small>
+                                </div>
+                            </div>
+                        </div>`;
+
+              $('#ucapanList').prepend(newUcapan);
+
+              swal.fire({
+                icon: 'success',
+                title: 'Terkirim!',
+                text: 'Terima kasih atas doa restunya.',
+                timer: 2000,
+                showConfirmButton: false
+              });
+            }
+          },
+          error: function (xhr) {
+            // Biar tau salahnya dimana
+            console.error(xhr.responseText);
+            let msg = 'Gagal kirim ucapan.';
+            if (xhr.status === 422) msg = 'Pastikan semua form sudah terisi dengan benar.';
+
+            swal.fire('Error', msg, 'error');
+          },
+          complete: function () {
+            btn.prop('disabled', false).html('Kirim Ucapan');
+          }
+        });
+      });
+    });
+
+  </script>
 
 </body>
 
