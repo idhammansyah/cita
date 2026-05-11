@@ -189,15 +189,16 @@ class ListUndanganController extends Controller
   public function showInvitation($slug, $guest_name)
   {
     $wedding = $this->wedding->with(['stories' => function($query)
-      {
-        $query->where('is_deleted', 0);
-      },
-      'galleries' => function($query)
-      {
-        $query->where('is_deleted', 0);
-      }])->where('slug', $slug)->firstOrFail();
+      {$query->where('is_deleted', 0);},
+      'galleries' => function($query){$query->where('is_deleted', 0);
+      }, 'rsvps'])->where('slug', $slug)->firstOrFail();
 
     $decodedGuestName = str_replace(['+', '%20'], ' ', urldecode($guest_name));
+
+    $ucapanS = DB::table('rsvps') // Sesuaikan nama tabelmu
+        ->where('wedding_id', $wedding->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
     $tamu = DB::table('tamu')
     ->join('weddings', 'tamu.wedding_id', '=', 'weddings.id')
@@ -217,7 +218,8 @@ class ListUndanganController extends Controller
         'slug'  => $slug,
         'wedding' => $wedding,
         'nama_tamu' => $decodedGuestName,
-        'tamu' => $tamu
+        'tamu' => $tamu,
+        'ucapanS'   => $ucapanS
     ]);
   }
 
@@ -233,7 +235,7 @@ class ListUndanganController extends Controller
 
       $data = [
         'wedding_id' => $request->wedding_id,
-        'nama_tamu'  => $request->nama_tamu,
+        'name'  => $request->nama_tamu,
         'kehadiran'  => $request->kehadiran,
         'ucapan'     => $request->ucapan,
         'created_at' => now(),

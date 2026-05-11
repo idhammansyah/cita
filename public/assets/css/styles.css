@@ -589,58 +589,102 @@ h2::after {
 
 }
 
-.rsvp-section {
-  background: #ffffff;
-  /* Sesuaikan dengan tema lu */
+/* 1. Container Utama */
+#rsvp .rsvp-section {
+  background: transparent !important;
+  padding: 30px;
   border-radius: 20px;
 }
 
-/* Menyamakan tinggi kolom */
+/* 2. Row Equal: Biar kolom kiri & kanan tingginya sama */
 .row-equal {
   display: flex;
   flex-wrap: wrap;
+  align-items: stretch;
+  /* Ini yang bikin tinggi kolom seimbang */
 }
 
-/* Box Form & Box Ucapan */
-.rsvp-box,
-.guestbook-box {
-  height: 100%;
+/* Memastikan kolom bootstrap bertingkah sebagai flex container */
+.row-equal>[class*="col-"] {
   display: flex;
   flex-direction: column;
-  padding: 25px;
 }
 
+/* 3. Box Wrapper (Form & Guestbook) */
+.rsvp-box,
 .guestbook-box {
-  background: #fdfdfd;
-  /* Warna beda tipis biar ada pemisah */
+  flex: 1;
+  /* Paksa box ngisi tinggi kolom sampe mentok */
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  /* No background putih */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Border tipis transparan biar elegan */
   border-radius: 15px;
-  border: 1px solid #f1f1f1;
 }
 
-/* List ucapan tanpa card, pakai border bottom aja */
-.ucapan-item {
-  padding: 15px 0;
-  border-bottom: 1px solid #eee;
+/* 4. Guestbook Box Specific */
+.guestbook-box {
+  /* Sedikit overlay transparan biar teks tetep kebaca di background apapun */
+  background: rgb(255, 255, 255);
+  backdrop-filter: blur(2px);
 }
 
-.ucapan-item:last-child {
-  border-bottom: none;
-}
-
-/* Scrollbar estetik */
+/* 5. MAGIC SCROLL: Ini yang lu mau */
 .ucapan-list-wrapper {
-  flex-grow: 1;
+  flex: 1;
+  height: 0;
+  max-height: 350px;
   overflow-y: auto;
-  max-height: 400px;
-  /* Atur biar gak terlalu panjang */
-  padding-right: 10px;
+  padding: 20px;
+  margin-top: 10px;
 }
 
+/* 6. Item Ucapan (List) */
+.ucapan-item {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgb(104, 96, 96);
+  transition: all 0.3s ease;
+}
+
+/* Hover effect dikit biar asik */
+.ucapan-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+/* 7. Scrollbar Estetik */
 .ucapan-list-wrapper::-webkit-scrollbar {
   width: 4px;
 }
 
+.ucapan-list-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .ucapan-list-wrapper::-webkit-scrollbar-thumb {
-  background: #ddd;
+  background: rgba(0, 0, 0, 0.2);
+  /* Warna scrollbar tipis */
   border-radius: 10px;
+}
+
+/* Fix buat responsive: di HP biar gak maksa flex row */
+@media (max-width: 768px) {
+  .row-equal {
+    flex-direction: column;
+  }
+
+  .border-end-md {
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+  }
+
+  .ucapan-list-wrapper {
+    min-height: 300px;
+    /* Di HP jangan terlalu tinggi */
+  }
 }

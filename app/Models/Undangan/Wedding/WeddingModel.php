@@ -39,4 +39,12 @@ class WeddingModel extends Model
     {
         return $this->hasMany(GalleryWedding::class, 'wedding_id', 'id');
     }
+
+    /**
+     * Relasi ke table rsvps
+     */
+    public function rsvps(): HasMany
+    {
+        return $this->hasMany(RSVP::class, 'wedding_id', 'id');
+    }
 }

@@ -104,18 +104,16 @@
                   </td>
                   <td>
                     <a href="{{ route('undanganku', $item->slug) }}"
-                      class="btn btn-sm btn-info">
-                      View
-                    </a> |
-                    <button class="btn btn-sm btn-warning btn-edit-wedding"
-                          data-id="{{ $item->id }}"
-                          data-bs-toggle="modal"
-                          data-bs-target="#editForm">
-                      Edit
-                  </button> |
-                    <button type="button" class="btn btn-sm btn-danger delete-wedding-btn" data-id="{{ $item->id }}"
+                      class="btn btn-info me-2">
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <button class="btn me-2 btn-warning btn-edit-wedding" data-id="{{ $item->id }}"
+                      data-bs-toggle="modal" data-bs-target="#editForm">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger delete-wedding-btn" data-id="{{ $item->id }}"
                       data-name="{{ $item->m_pria_panggilan }} & {{ $item->m_wanita_panggilan }}">
-                      Delete
+                      <i class="bi bi-trash"></i>
                     </button>
 
                   </td>
@@ -135,7 +133,7 @@
 @include('undangan_layout.form_undangan.modal.modal_edit')
 @section('scripts')
 <script>
-  $(document).ready(function (){
+  $(document).ready(function () {
     // Inisialisasi DataTables
     $('#weddingTable').DataTable({
       "paging": true,

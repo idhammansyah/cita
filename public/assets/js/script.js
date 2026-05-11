@@ -6,7 +6,6 @@ $(document).ready(function () {
   initGuestName();
   initEnvelope();
   initMusic();
-  initRSVP();
   initCountdown();
   initSakura();
   initGallery();
@@ -86,40 +85,6 @@ function initMusic() {
   });
 }
 
-/* =========================
-RSVP & GUESTBOOK
-========================= */
-function initRSVP() {
-  $("#rsvpForm").submit(function (e) {
-    e.preventDefault();
-
-    const nama = $("#nama").val().trim();
-    const hadir = $("#kehadiran").val();
-    const ucapan = $("#ucapan").val().trim();
-
-    if (!nama || !ucapan) {
-      alert("Harap isi nama dan ucapan Anda.");
-      return;
-    }
-
-    // Contoh sederhana penambahan ucapan ke list
-    const html = `
-            <div class="guest-item" data-aos="fade-up">
-                <b>${nama}</b> <small class="text-muted">(${hadir})</small>
-                <p>${ucapan}</p>
-            </div>
-        `;
-
-    if ($("#guestbook").length) {
-      $("#guestbook").prepend(html);
-      AOS.refresh(); // Refresh AOS untuk elemen baru
-    } else {
-      alert("Terima kasih atas ucapannya!");
-    }
-
-    $("#rsvpForm")[0].reset();
-  });
-}
 
 /* =========================
 COUNTDOWN DINAMIS

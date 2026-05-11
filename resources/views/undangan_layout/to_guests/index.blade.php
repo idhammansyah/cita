@@ -11,6 +11,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <style>
     #invitation {
       display: none;
@@ -64,9 +65,33 @@
         {{ \Carbon\Carbon::parse($wedding->tgl_akad)->translatedFormat('l, d F Y') }}
       </p>
       <div class="mt-4" data-aos="fade-up" data-aos-delay="200">
-        <a href="https://www.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+{{ $wedding->m_pria_panggilan }}+%26+{{ $wedding->m_wanita_panggilan }}&dates={{ \Carbon\Carbon::parse($wedding->tgl_akad)->format('Ymd\THis\Z') }}"
-          target="_blank" class="btn btn-light">
-          Save The Date
+        @php
+          // Parse tanggal resepsi
+          $start = \Carbon\Carbon::parse($wedding->tgl_resepsi)->format('Ymd\THis');
+          // Tambahin durasi 2 jam biar di kalender ada durasinya
+          $end = \Carbon\Carbon::parse($wedding->tgl_resepsi)->addHours(2)->format('Ymd\THis');
+          $dates = $start . '/' . $end;
+
+          // Siapin teks buat judul kalender
+          $title = urlencode("The Wedding of " . $wedding->m_pria_panggilan . " & " . $wedding->m_wanita_panggilan);
+        @endphp
+
+        <a href="https://www.google.com/calendar/render?action=TEMPLATE&text={{ $title }}&dates={{ $dates }}&details=Mohon+doa+restunya+pada+acara+pernikahan+kami.&location=Lokasi+Acara"
+          target="_blank" class="btn" style="background: linear-gradient(45deg, #d4af37, #f2d06b);
+          color: #fff;
+          border: none;
+          padding: 12px 25px;
+          border-radius: 50px;
+          font-weight: 600;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          font-size: 0.8rem;
+          box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          text-decoration: none;">
+            Save Date &nbsp;<i class="bi bi-heart-fill"></i>
         </a>
       </div>
     </div>
@@ -215,7 +240,7 @@
 
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Ucapan & Doa</label>
-                  <textarea class="form-control border-0 bg-light" placeholder="Tulis doa restu Anda..." id="ucapan"
+                  <textarea class="form-control border-0 bg-light" placeholder="Tulis doa restu Anda..." id="ucapans"
                     rows="4" required></textarea>
                 </div>
 
@@ -227,11 +252,30 @@
 
           <div class="col-md-6">
             <div class="guestbook-box">
-              <h6 class="fw-bold mb-4 d-flex align-items-center">
+              <h6 class="fw-bold mt-3 ms-3 d-flex align-items-center">
                 <i class="bi bi-chat-heart text-danger me-2" style="font-size: 1.2rem;"></i>
                 Doa & Ucapan Tamu
               </h6>
-              <div id="ucapanList" class="ucapan-list-wrapper" style="max-height: 400px; overflow-y: auto;">
+              <div id="ucapanList" class="ucapan-list-wrapper">
+                @foreach($ucapanS as $u)
+                  <div class="ucapan-item card mb-3 shadow-sm" style="border-radius: 12px;">
+                    <div class="card-body">
+                      <div class="d-flex justify-content-between">
+                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">{{ $u->name }}</h6>
+                        <span
+                          class="badge {{ $u->kehadiran === 'Hadir' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} rounded-pill"
+                          style="font-size: 0.7rem;">
+                          {{ $u->kehadiran }}
+                        </span>
+                      </div>
+                      <p class="text-muted small mb-1">{{ $u->ucapan }}</p>
+                      <small class="text-muted" style="font-size: 0.7rem;">
+                        <i
+                          class="bi bi-clock me-1"></i>{{ \Carbon\Carbon::parse($u->created_at)->diffForHumans() }}
+                      </small>
+                    </div>
+                  </div>
+                @endforeach
               </div>
             </div>
           </div>
@@ -248,7 +292,7 @@
         <br><br>
 
         <b>{{ $wedding->m_pria_panggilan }} & {{ $wedding->m_wanita_panggilan }}</b> <br>
-        <small class="text-muted mb-5">Created by Idham Mansyah Awwalu</small>
+        <small class="text-muted mb-5">Wedding Invitation created by Idham Mansyah Awwalu</small>
       </p>
     </div>
 
@@ -278,93 +322,88 @@
 
   </script>
   <script src="{{ asset('assets/js/script.js') }}"></script>
-
   <script>
-    $(document).ready(function () {
-      $('#rsvpForm').on('submit', function (e) {
-        e.preventDefault();
+    $('#rsvpForm').on('submit', function (e) {
+      e.preventDefault();
 
-        // 1. Ambil data
-        const btn = $('#btnKirim');
-        const weddingId = "{{ $wedding->id }}";
-        const nama = $('#nama').val();
-        const kehadiran = $('#kehadiran').val();
-        const ucapan = $(this).find('#ucapan').val();
+      // 1. Ambil data
+      const btn = $('#btnKirim');
+      const weddingId = "{{ $wedding->id }}";
+      const nama = $('#nama').val();
+      const kehadiran = $('#kehadiran').val();
+      const ucapan = $('#ucapans').val();
 
-        // Debugging: Cek di console log (F12)
-        console.log("Mengirim data:", {
-          weddingId,
-          nama,
-          kehadiran,
-          ucapan
-        });
+      // Debugging: Cek di console log (F12)
+      console.log("Mengirim data:", {
+        weddingId,
+        nama,
+        kehadiran,
+        ucapan
+      });
 
-        if (!kehadiran) {
-          swal.fire('Opps!', 'Pilih status kehadiran dulu bray.', 'warning');
-          return;
-        }
+      if (!kehadiran) {
+        swal.fire('Opps!', 'Pilih status kehadiran dulu bray.', 'warning');
+        return;
+      }
 
-        // 2. Loading State
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Mengirim...');
+      // 2. Loading State
+      btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Mengirim...');
 
-        // 3. AJAX Request
-        $.ajax({
-          url: "{{ route('store.ucapan', ['slug' => $wedding->slug, 'guest_name' => $nama_tamu]) }}",
-          type: "POST",
-          data: {
-            _token: "{{ csrf_token() }}",
-            wedding_id: weddingId,
-            nama_tamu: nama,
-            kehadiran: kehadiran,
-            ucapan: ucapan
-          },
-          success: function (response) {
-            if (response.status === 'success') {
-              // Reset Form
-              $('#ucapan').val('');
-              $('#kehadiran').val('').trigger('change');
+      // 3. AJAX Request
+      $.ajax({
+        url: "{{ route('store.ucapan', ['slug' => $wedding->slug, 'guest_name' => $nama_tamu]) }}",
+        type: "POST",
+        data: {
+          _token: "{{ csrf_token() }}",
+          wedding_id: weddingId,
+          nama_tamu: nama,
+          kehadiran: kehadiran,
+          ucapan: ucapan
+        },
+        success: function (response) {
+          if (response.status === 'success') {
+            // Reset Form
+            $('#ucapans').val('');
+            $('#kehadiran').val('').trigger('change');
 
-              // Template Ucapan Baru
-              let badgeClass = response.data.kehadiran === 'Hadir' ? 'bg-success-subtle text-success' :
-                'bg-danger-subtle text-danger';
+            // Template Ucapan Baru
+            let badgeClass = response.data.kehadiran === 'Hadir' ? 'bg-success-subtle text-success' :
+              'bg-danger-subtle text-danger';
 
-              let newUcapan = `
-                        <div class="card mb-3 shadow-sm border-0 animate__animated animate__fadeInDown" style="border-radius: 12px;">
-                            <div class="card-body">
-                                <div class="ucapan-item">
-                                    <div class="d-flex justify-content-between">
-                                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">${response.data.nama}</h6>
-                                        <span class="badge ${badgeClass} rounded-pill" style="font-size: 0.7rem;">${response.data.kehadiran}</span>
-                                    </div>
-                                    <p class="text-muted small mb-1">${response.data.ucapan}</p>
-                                    <small class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-clock me-1"></i>Baru saja</small>
-                                </div>
-                            </div>
-                        </div>`;
+            let newUcapan = `
+            <div class="ucapan-item card mb-3 shadow-sm animate__animated animate__fadeInDown" style="border-radius: 12px;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="fw-bold mb-1" style="font-size: 0.9rem;">${response.data.nama}</h6>
+                        <span class="badge ${badgeClass} rounded-pill" style="font-size: 0.7rem;">${response.data.kehadiran}</span>
+                    </div>
+                    <p class="text-muted small mb-1">${response.data.ucapan}</p>
+                    <small class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-clock me-1"></i>Baru saja</small>
+                </div>
+            </div>`;
 
-              $('#ucapanList').prepend(newUcapan);
+            $('#ucapanList').prepend(newUcapan);
 
-              swal.fire({
-                icon: 'success',
-                title: 'Terkirim!',
-                text: 'Terima kasih atas doa restunya.',
-                timer: 2000,
-                showConfirmButton: false
-              });
-            }
-          },
-          error: function (xhr) {
-            // Biar tau salahnya dimana
-            console.error(xhr.responseText);
-            let msg = 'Gagal kirim ucapan.';
-            if (xhr.status === 422) msg = 'Pastikan semua form sudah terisi dengan benar.';
-
-            swal.fire('Error', msg, 'error');
-          },
-          complete: function () {
-            btn.prop('disabled', false).html('Kirim Ucapan');
+            swal.fire({
+              icon: 'success',
+              title: 'Terkirim!',
+              text: 'Terima kasih atas doa restunya.',
+              timer: 2000,
+              showConfirmButton: false
+            });
           }
-        });
+        },
+        error: function (xhr) {
+          // Biar tau salahnya dimana
+          console.error(xhr.responseText);
+          let msg = 'Gagal kirim ucapan.';
+          if (xhr.status === 422) msg = 'Pastikan semua form sudah terisi dengan benar.';
+
+          swal.fire('Error', msg, 'error');
+        },
+        complete: function () {
+          btn.prop('disabled', false).html('Kirim Ucapan');
+        }
       });
     });
 

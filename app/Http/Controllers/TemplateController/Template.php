@@ -142,11 +142,16 @@ class Template extends Controller
       'galleries' => function($query)
       {
         $query->where('is_deleted', 0); // Hanya ambil gallery yang aktif
-      }
+      }, 'rsvps'
     ])
     ->where('is_deleted', 0)
     ->where('slug', $slug)
     ->firstOrFail();
+
+    $ucapanS = DB::table('rsvps') // Sesuaikan nama tabelmu
+        ->where('wedding_id', $wedding->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
 
     $tamu = DB::table('tamu')
     ->join('weddings', 'tamu.wedding_id', '=', 'weddings.id')
@@ -163,6 +168,7 @@ class Template extends Controller
     return view('undangan_layout.undangan_digital.index', [
         'slug'  => $slug,
         'wedding' => $wedding,
+        'ucapanS'   => $ucapanS
     ]);
   }
 

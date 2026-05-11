@@ -20,6 +20,6 @@ class RSVP extends Model
    */
   public function wedding()
   {
-    return $this->belongsTo(WeddingModel::class, 'weddings_id', 'id');
+    return $this->belongsTo(WeddingModel::class, 'wedding_id', 'id');
   }
 }
