@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'wablas' => [
+      'token' => env('WABLAS_TOKEN'),
+      'domain' => env('WABLAS_DOMAIN', 'https://jogja.wablas.com'),
+    ],
+
 ];

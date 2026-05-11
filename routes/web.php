@@ -100,6 +100,7 @@ Route::middleware(['auth', 'module.access', 'role:1,2,3'])->group(function ()
   Route::post('/delete-tamu/{id}', [list_undangan::class, 'destroy']);
   Route::get('/wa/{id}', [list_undangan::class, 'getWaData']);
   Route::post('/wa/update-status', [list_undangan::class, 'updateWaStatus']);
+  Route::post('/tamu-bulk-send', [list_undangan::class, 'bulkSend'])->name('tamu.bulk-send');
   Route::get('/wedding/{slug}/invitation/to/{guest_name}', [list_undangan::class, 'showInvitation']);
 
   // approve untuk manager

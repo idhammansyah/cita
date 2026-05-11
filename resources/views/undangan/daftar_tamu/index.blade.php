@@ -11,11 +11,11 @@
 <section class="dashboard">
 
   {{-- SUCCESS MESSAGE --}}
-  @if (session('success'))
-  <div class="alert alert-success shadow-sm">{{ session('success') }}</div>
+  @if(session('success'))
+    <div class="alert alert-success shadow-sm">{{ session('success') }}</div>
   @endif
-  @if (session('error'))
-  <div class="alert alert-danger shadow-sm">{{ session('error') }}</div>
+  @if(session('error'))
+    <div class="alert alert-danger shadow-sm">{{ session('error') }}</div>
   @endif
 
   <div class="row">
@@ -23,9 +23,9 @@
       <div class="card">
         <div class="card-header">Daftar Tamu
           @canCreate
-          <button class="btn btn-success btn-sm float-end" data-bs-toggle="modal" data-bs-target="#addGuestModal">
-            Tambah Tamu
-          </button>
+            <button class="btn btn-success btn-sm float-end" data-bs-toggle="modal" data-bs-target="#addGuestModal">
+              Tambah Tamu
+            </button>
           @endcanCreate
         </div>
         <div class="card-body">
@@ -38,7 +38,9 @@
               <thead class="table-dark text-center">
                 <tr>
                   <th width="5%">No</th>
-                  <th width="5%">Check</th>
+                  <th width="5%">
+                    <input type="checkbox" id="checkAll">
+                  </th>
                   <th>Nama Tamu</th>
                   <th>No HP</th>
                   <th>Undangan Dari</th>
@@ -68,6 +70,47 @@
   document.addEventListener('DOMContentLoaded', function () {
     document.body.classList.remove('toggle-sidebar');
   });
+
+  $(document).on('change', '#checkAll', function () {
+    let isChecked = $(this).is(':checked');
+
+    // Cari semua checkbox di body yang tidak disabled
+    $('.wa-check').prop('checked', isChecked);
+
+    // Trigger fungsi update tombol bulkSend yang udah lo buat sebelumnya
+    updateBulkButtonStatus();
+  });
+
+  // 2. Logic Klik Satuan (Baris)
+  $(document).on('change', '.wa-check', function () {
+    let totalCheckbox = $('.wa-check').length;
+    let totalChecked = $('.wa-check:checked').length;
+
+    // Jika semua checkbox tercentang, centang juga header-nya
+    if (totalChecked === totalCheckbox) {
+      $('#checkAll').prop('checked', true);
+    } else {
+      $('#checkAll').prop('checked', false);
+    }
+
+    updateBulkButtonStatus();
+  });
+
+  // Fungsi pembantu biar logic tombol kirim bulk tetap sinkron
+  function updateBulkButtonStatus() {
+    let checkedCount = $('.wa-check:checked').length;
+    if (checkedCount > 0) {
+      $('#bulkSend').prop('disabled', false);
+      $('.row-send').prop('disabled', true);
+    } else {
+      $('#bulkSend').prop('disabled', true);
+      $('.row-send').each(function () {
+        if (!$(this).data('sent')) {
+          $(this).prop('disabled', false);
+        }
+      });
+    }
+  }
 
 </script>
 
@@ -168,7 +211,9 @@
 
     // Reset saat redraw table
     table.on('draw', function () {
-      $('#bulkSend').prop('disabled', true);
+      // Setiap kali tabel ganti halaman atau di-search:
+      $('#checkAll').prop('checked', false); // Header jadi kosong lagi
+      $('#bulkSend').prop('disabled', true); // Tombol kirim terpilih matiin dulu
     });
 
   });
@@ -205,30 +250,30 @@
 
 
   // Pastikan selector-nya sesuai dengan class tombol kirim lo
-  $(document).on('click', '.send-wa', function() {
+  $(document).on('click', '.send-wa', function () {
     let button = $(this);
     let id = button.data('id');
 
     $.get("/wa/" + id, function (data) {
-        console.log("Data Lengkap:", data); // Cek di sini, m_pria_panggilan muncul gak?
+      console.log("Data Lengkap:", data); // Cek di sini, m_pria_panggilan muncul gak?
 
-        if (!data.slug) {
-            alert("Slug wedding-nya gak ketemu bray!");
-            return;
-        }
+      if (!data.slug) {
+        alert("Slug wedding-nya gak ketemu bray!");
+        return;
+      }
 
-        let phone = data.phone.replace(/^0/, '62');
-        let baseUrl = window.location.origin;
+      let phone = data.phone.replace(/^0/, '62');
+      let baseUrl = window.location.origin;
 
-        // Nama untuk URL (pake encode) vs Nama untuk Teks (asli)
-        let guestNameUrl = encodeURIComponent(data.nama_tamu);
-        let guestNameText = data.nama_tamu;
+      // Nama untuk URL (pake encode) vs Nama untuk Teks (asli)
+      let guestNameUrl = encodeURIComponent(data.nama_tamu);
+      let guestNameText = data.nama_tamu;
 
-        let weddingLink = `${baseUrl}/wedding/${data.slug}/invitation/to/${guestNameUrl}`;
-        let weddingName = `${data.m_pria_panggilan} & ${data.m_wanita_panggilan}`;
+      let weddingLink = `${baseUrl}/wedding/${data.slug}/invitation/to/${guestNameUrl}`;
+      let weddingName = `${data.m_pria_panggilan} & ${data.m_wanita_panggilan}`;
 
-        // Susun pesan rapat kiri biar gak ada spasi liar di WA
-        let message = `Kepada Yth.
+      // Susun pesan rapat kiri biar gak ada spasi liar di WA
+      let message = `Kepada Yth.
 Bapak/Ibu/Saudara/i
 *${guestNameText}*
 _______
@@ -247,59 +292,55 @@ Hormat kami,
 ${weddingName}
 ________`;
 
-        let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
-        window.open(url, '_blank');
+      let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+      window.open(url, '_blank');
 
-        button.prop('disabled', true).addClass('btn-secondary');
+      button.prop('disabled', true).addClass('btn-secondary');
     });
   });
 
   $('#bulkSend').click(function () {
     let ids = $('.wa-check:checked').map(function () {
-        return $(this).val();
+      return $(this).val();
     }).get();
 
     if (ids.length === 0) {
-        Swal.fire('Tidak ada yang dipilih', '', 'warning');
-        return;
+      Swal.fire('Opps!', 'Pilih tamu dulu bray.', 'warning');
+      return;
     }
 
-    let delay = 0;
-    let baseUrl = window.location.origin;
+    Swal.fire({
+      title: 'Kirim Undangan?',
+      text: `Sistem akan mengirim ${ids.length} undangan secara otomatis di background (jeda 3-5 menit).`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Jalankan Antrean!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Tampilkan loading biar user gak bingung
+        Swal.fire({
+          title: 'Memproses...',
+          text: 'Sedang mendaftarkan tamu ke antrean server.',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
 
-    ids.forEach(function (id) {
-        setTimeout(function () {
-            $.get("/wa/" + id, function (data) {
-                if (data.slug) {
-                    let phone = data.phone.replace(/^0/, '62');
-                    let guestNameUrl = encodeURIComponent(data.nama_tamu);
-                    let guestNameText = data.nama_tamu;
-                    let weddingLink = `${baseUrl}/wedding/${data.slug}/invitation/to/${guestNameUrl}`;
-                    let weddingName = `${data.m_pria_panggilan} & ${data.m_wanita_panggilan}`;
 
-                    // Pesan yang sama dengan tombol satuan
-                    let message = `Kepada Yth.
-Bapak/Ibu/Saudara/i
-*${guestNameText}*
-_______
-
-Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami.
-
-Info lengkap acara klik link:
-${weddingLink}
-
-Terima Kasih.
-Hormat kami,
-${weddingName}`;
-
-                    let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
-                    window.open(url, '_blank');
-                }
-            });
-        }, delay);
-        delay += 5000; // Jeda 5 detik biar gak dianggap spam sama browser/WA
+        $.post("{{ route('tamu.bulk-send') }}", {
+          _token: "{{ csrf_token() }}",
+          ids: ids
+        }, function (res) {
+          Swal.fire('Berhasil!', 'Antrean sudah berjalan di server. Lu bisa tutup browser sekarang.',
+            'success');
+          table.ajax.reload(null, false); // Reload table buat update status
+        }).fail(function () {
+          Swal.fire('Error', 'Gagal menghubungi server.', 'error');
+        });
+      }
     });
-});
+  });
 
   $(document).on('click', '.delete', function () {
 

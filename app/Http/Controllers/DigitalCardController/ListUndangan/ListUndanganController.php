@@ -6,73 +6,84 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Undangan\list_tamu\list_undangan;
+use App\Models\Undangan\Wedding\WeddingModel;
 use Illuminate\Support\Facades\DB;
 
 class ListUndanganController extends Controller
 {
   public function index()
   {
-    return view('undangan.daftar_tamu.index');
+    $data = WeddingModel::where('is_deleted', 0)->get();
+    return view('undangan.daftar_tamu.index', compact('data'));
   }
 
   public function get_list_tamu(Request $request)
   {
+    // 1. Sesuaikan index dengan urutan kolom di JS DataTables lu
+    // Index 0 (No) dan 1 (Check) biasanya non-orderable di JS, tapi tetep harus diisi di sini
     $columns = [
-        0 => 'id_tamu',
-        1 => 'nama_tamu',
-        2 => 'phone',
-        3 => 'tamu_dari',
-        4 => 'group_nama',
-        5 => 'address',
+        0 => 'lu.id_tamu',   // No
+        1 => 'lu.id_tamu',   // Check
+        2 => 'lu.nama_tamu', // Nama Tamu
+        3 => 'lu.phone',     // No HP
+        4 => 'lu.tamu_dari', // Undangan Dari
+        5 => 'g.nama_group_tamu', // Group
+        6 => 'lu.address',   // Alamat
     ];
 
-    $totalData = list_undangan::count();
+    // 2. Query utama (Gunakan join agar search group_nama jalan)
+    $query = list_undangan::from('tamu as lu')
+        ->join('tamu_groups as g', 'g.id_group_tamu', '=', 'lu.id_groups')
+        ->join('weddings as w', 'w.id', '=', 'lu.wedding_id')
+        ->where('lu.is_deleted', 0);
+
+    $totalData = $query->count(); // Total data aktif
     $totalFiltered = $totalData;
 
-    $limit = $request->input('length');
-    $start = $request->input('start');
-    $order = $columns[$request->input('order.0.column')];
-    $dir = $request->input('order.0.dir');
-
-    $query = list_undangan::from('tamu as lu')
-    ->join('tamu_groups as g', 'g.id_group_tamu', '=', 'lu.id_groups')
-    ->join('weddings as w', 'w.id', '=', 'lu.wedding_id')
-    ->where('lu.is_deleted', 0)
-    ->select(
-        'lu.id_tamu',
-        'lu.nama_tamu',
-        'lu.phone',
-        'lu.tamu_dari',
-        'lu.address',
-        'g.nama_group_tamu as group_nama',
-        'w.slug'
-    );
-
-    // Search
+    // 3. Logic Search (Gunakan Parameter Grouping biar is_deleted gak jebol)
     if (!empty($request->input('search.value'))) {
+        $search = $request->input('search.value');
 
-      $search = $request->input('search.value');
+        $query->where(function($q) use ($search) {
+            $q->where('lu.nama_tamu', 'LIKE', "%{$search}%")
+              ->orWhere('lu.phone', 'LIKE', "%{$search}%")
+              ->orWhere('lu.tamu_dari', 'LIKE', "%{$search}%")
+              ->orWhere('lu.address', 'LIKE', "%{$search}%")
+              ->orWhere('g.nama_group_tamu', 'LIKE', "%{$search}%");
+        });
 
-      $query->where('lu.nama_tamu', 'LIKE', "%{$search}%")
-        ->orWhere('lu.phone', 'LIKE', "%{$search}%")
-        ->orWhere('lu.tamu_dari', 'LIKE', "%{$search}%")
-        ->orWhere('lu.group_nama', 'LIKE', "%{$search}%")
-        ->orWhere('lu.address', 'LIKE', "%{$search}%")
-        ->andWhere('lu.is_deleted', 0);
-
-      $totalFiltered = $query->count();
+        $totalFiltered = $query->count();
     }
 
-    $data = $query->offset($start)
-      ->limit($limit)
-      ->orderBy($order, $dir)
-      ->get();
+    // 4. Logic Sorting & Pagination
+    $limit = $request->input('length');
+    $start = $request->input('start');
+    $orderIndex = $request->input('order.0.column');
+    $order = $columns[$orderIndex] ?? 'lu.id_tamu'; // Fallback ke id_tamu
+    $dir = $request->input('order.0.dir');
+
+    $data = $query->select(
+            'lu.id_tamu',
+            'lu.nama_tamu',
+            'lu.phone',
+            'lu.tamu_dari',
+            'lu.address',
+            'lu.is_sent', // Dibutuhkan buat logic tombol di JS
+            'g.nama_group_tamu as group_nama',
+            'w.slug',
+            'w.m_pria_panggilan', // Tambahin ini biar WA gak undefined
+            'w.m_wanita_panggilan'
+        )
+        ->offset($start)
+        ->limit($limit)
+        ->orderBy($order, $dir)
+        ->get();
 
     $json_data = [
-      "draw" => intval($request->input('draw')),
-      "recordsTotal" => intval($totalData),
-      "recordsFiltered" => intval($totalFiltered),
-      "data" => $data
+        "draw"            => intval($request->input('draw')),
+        "recordsTotal"    => intval($totalData),
+        "recordsFiltered" => intval($totalFiltered),
+        "data"            => $data
     ];
 
     return response()->json($json_data);
@@ -94,6 +105,7 @@ class ListUndanganController extends Controller
         {
           list_undangan::create([
             'nama_tamu' => $nama,
+            'wedding_id' => $request->wedding_id[$index],
             'phone' => $request->no_hp[$index],
             'tamu_dari' => $request->undangan_dari[$index],
             'id_groups' => $request->group_undangan[$index],
@@ -184,6 +196,20 @@ class ListUndanganController extends Controller
         ->update(['is_sent' => 1]);
 
     return response()->json(['success' => true]);
+  }
+
+  public function bulkSend(Request $request)
+  {
+    $ids = $request->ids;
+
+    if (empty($ids)) {
+      return response()->json(['message' => 'Gak ada ID terpilih'], 400);
+    }
+
+    // Lempar ke Job yang udah kita bikin tadi
+    \App\Jobs\SendWaJob::dispatch($ids);
+
+    return response()->json(['status' => 'success']);
   }
 
   public function showInvitation($slug, $guest_name)

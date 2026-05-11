@@ -5,6 +5,7 @@ namespace  App\Models\Undangan\list_tamu;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Undangan\Wedding\WeddingModel;
 
 class list_undangan extends Model
 {
@@ -25,5 +26,9 @@ class list_undangan extends Model
   protected function getAllowedFields()
   {
     return Schema::getColumnListing($this->getTable());
+  }
+
+  public function wedding() {
+    return $this->belongsTo(WeddingModel::class, 'wedding_id');
   }
 }

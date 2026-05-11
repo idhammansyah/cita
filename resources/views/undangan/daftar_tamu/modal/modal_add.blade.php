@@ -35,7 +35,17 @@
                 <input type="text" class="form-control" name="no_hp[]" required>
               </div>
 
-              <div class="col-md-6 mb-3">
+              <div class="col-md-4">
+                <label class="form-label">Choose Wedding <span class="text-danger">*</span></label>
+                <select name="wedding_id" class="form-select" required>
+                  <option value="">-- Choose One --</option>
+                  @foreach ($data as $item)
+                    <option value="{{ $item->id }}">{{ $item->m_pria_panggilan }} & {{ $item->m_wanita_panggilan }}</option>
+                  @endforeach
+                </select>
+              </div>
+
+              <div class="col-md-4 mb-3">
                 <label class="form-label">Undangan Dari <span class="text-danger">*</span></label>
                 <select name="undangan_dari[]" class="form-select" required>
                   <option value="">-- Choose One --</option>
@@ -48,7 +58,7 @@
                 </select>
               </div>
 
-              <div class="col-md-6 mb-3">
+              <div class="col-md-4 mb-3">
                 <label class="form-label">Group Undangan <span class="text-danger">*</span></label>
                 <select class="form-select" name="group_undangan[]" required>
                   <option value="">Choose...</option>
