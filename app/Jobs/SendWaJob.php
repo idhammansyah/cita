@@ -9,7 +9,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class SendWaJob implements ShouldQueue
 {
@@ -39,65 +38,71 @@ class SendWaJob implements ShouldQueue
                 continue;
             }
 
-            // --- 1. LOGIC SPINTAX (VARIASI TEKS AGAR TIDAK DI-BAN) ---
-            $pembukaVariasi = [
-                "Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami.",
-                "Dengan penuh rasa syukur, kami bermaksud mengundang Bapak/Ibu/Saudara/i, teman serta kerabat, untuk memberikan doa restu di acara pernikahan kami.",
-                "Kabar bahagia dari kami! Kami berharap Bapak/Ibu/Saudara/i, teman sekaligus sahabat, berkenan hadir di hari istimewa pernikahan kami."
-            ];
-
-            $penutupVariasi = [
-                "Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.",
-                "Kehadiran serta doa restu Bapak/Ibu/Saudara/i akan menjadi kado terindah dan kebahagiaan tersendiri bagi kami.",
-                "Sangat besar harapan kami agar Bapak/Ibu/Saudara/i dapat hadir untuk turut merayakan hari bahagia ini bersama kami."
-            ];
-
-            $txtPembuka = $pembukaVariasi[array_rand($pembukaVariasi)];
-            $txtPenutup = $penutupVariasi[array_rand($penutupVariasi)];
-            $refId = Str::random(5); // Identifier unik tiap pesan
-
-            // --- 2. PREPARE DATA ---
+            // --- 1. PREPARE DATA DINAMIS ---
             $guestName = $tamu->nama_tamu;
             $weddingName = "{$tamu->wedding->m_pria_panggilan} & {$tamu->wedding->m_wanita_panggilan}";
-            $baseUrl = config('app.url'); // Pastikan APP_URL di .env sudah benar (e.g., https://weddingku.com)
+            $baseUrl = config('app.url'); // Mengambil dari APP_URL di env
+
+            // Generate link dinamis sesuai data slug wedding dan nama tamu
             $weddingLink = "{$baseUrl}/wedding/{$tamu->wedding->slug}/invitation/to/" . urlencode($guestName);
 
-            // --- 3. SUSUN PESAN (Template Sesuai Request Lu) ---
+            // --- 2. SUSUN TEMPLATE PESAN (Sesuai Format di Blade/jQuery) ---
             $message = "Kepada Yth.\n";
             $message .= "Bapak/Ibu/Saudara/i\n";
             $message .= "*{$guestName}*\n";
             $message .= "_______\n\n";
-            $message .= "{$txtPembuka}\n\n";
+            $message .= "Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami.\n\n";
             $message .= "Berikut link undangan kami, untuk info lengkap dari acara, bisa kunjungi :\n\n";
             $message .= "{$weddingLink}\n\n";
-            $message .= "{$txtPenutup}\n\n";
+            $message .= "Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.\n\n";
             $message .= "Terima Kasih\n\n";
             $message .= "Hormat kami,\n";
             $message .= "{$weddingName}\n";
-            $message .= "________\n";
-            $message .= "_(Ref: {$refId})_";
+            $message .= "________";
 
-            // --- 4. KIRIM KE API WABLAS ---
-            // Pastikan nomor HP diawali 62. Jika 08, kita replace.
-            $phone = preg_replace('/^0/', '62', $tamu->phone);
+            // --- 3. FORMAT TELEPON STANDAR OPENWA ---
+            // Ubah awalan 08 / 0 menjadi 62
+            $phone = preg_replace('/^0/', '62', trim($tamu->phone));
 
-            /* $response = Http::withHeaders([
-                'Authorization' => config('services.wablas.token'),
-            ])->post(config('services.wablas.domain') . '/api/send-message', [
-                'phone' => $phone,
-                'message' => $message,
-            ]);
-            */
-            \Log::info("Testing kirim WA ke: " . $tamu->phone . " dengan pesan: " . $message);
+            // Tambahkan suffix @c.us jika belum ada (wajib untuk OpenWA)
+            if (!str_contains($phone, '@c.us')) {
+                $phone = $phone . '@c.us';
+            }
 
-            // --- 5. UPDATE STATUS JIKA BERHASIL ---
-            /* if ($response->successful()) {
-            //     $tamu->update(['is_sent' => 1]);
-            }*/
-            $tamu->update(['is_sent' => 1]);
+            // --- 4. EXECUTE KONEKSI KE API OPENWA ---
+            $apiUrl = config('services.openwa.base_url') . '/sendText';
+            $apiKey = config('services.openwa.api_key');
 
-            // --- 6. JEDA AMAN (3-5 MENIT) ---
-            // rand(180, 300) = 180 detik (3 min) sampai 300 detik (5 min)
+            $httpClient = Http::asJson();
+            if (!empty($apiKey)) {
+                $httpClient->withToken($apiKey);
+            }
+
+            try {
+                // Sesuai dokumentasi payload arguments OpenWA
+                $response = $httpClient->post($apiUrl, [
+                    'args' => [
+                        'to'      => $phone,
+                        'content' => $message,
+                    ]
+                ]);
+
+                // --- 5. UPDATE STATUS JIKA BERHASIL ---
+                if ($response->successful()) {
+                    \Log::info("OpenWA Berhasil mengirim ke: " . $phone);
+
+                    // Update field flag status kirim di database tamu
+                    $tamu->update(['is_sent' => 1]);
+                } else {
+                    \Log::error("OpenWA Gagal mengirim ke: " . $phone . " | Response: " . $response->body());
+                }
+
+            } catch (\Exception $e) {
+                \Log::error("Error OpenWA API Connection: " . $e->getMessage());
+            }
+
+            // --- 6. JEDA AMAN INTERNAL LOOP (ANTI-BAN) ---
+            // Mengambil angka random detik antara 3 menit sampai 5 menit
             sleep(rand(180, 300));
         }
     }
