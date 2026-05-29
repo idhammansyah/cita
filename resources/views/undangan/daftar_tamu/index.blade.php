@@ -41,6 +41,7 @@
                   <th width="5%">
                     <input type="checkbox" id="checkAll">
                   </th>
+                  <th>Pilihan Undangan</th>
                   <th>Nama Tamu</th>
                   <th>No HP</th>
                   <th>Undangan Dari</th>
@@ -145,6 +146,10 @@
             return `<input type="checkbox" class="wa-check" value="${row.id_tamu}">`;
 
           }
+        },
+        {
+          data: 'slug',
+          name: 'slug'
         },
         {
           data: 'nama_tamu',

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Undangan\list_tamu\list_undangan;
 use App\Models\Undangan\Wedding\WeddingModel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class ListUndanganController extends Controller
 {
@@ -19,16 +20,15 @@ class ListUndanganController extends Controller
 
   public function get_list_tamu(Request $request)
   {
-    // 1. Sesuaikan index dengan urutan kolom di JS DataTables lu
-    // Index 0 (No) dan 1 (Check) biasanya non-orderable di JS, tapi tetep harus diisi di sini
     $columns = [
-        0 => 'lu.id_tamu',   // No
-        1 => 'lu.id_tamu',   // Check
-        2 => 'lu.nama_tamu', // Nama Tamu
-        3 => 'lu.phone',     // No HP
-        4 => 'lu.tamu_dari', // Undangan Dari
-        5 => 'g.nama_group_tamu', // Group
-        6 => 'lu.address',   // Alamat
+      0 => 'lu.id_tamu',   // No
+      1 => 'lu.id_tamu',   // Check
+      2 => 'w.slug',       // slug
+      3 => 'lu.nama_tamu', // Nama Tamu
+      4 => 'lu.phone',     // No HP
+      5 => 'lu.tamu_dari', // Undangan Dari
+      6 => 'g.nama_group_tamu', // Group
+      7 => 'lu.address',   // Alamat
     ];
 
     // 2. Query utama (Gunakan join agar search group_nama jalan)
@@ -92,6 +92,7 @@ class ListUndanganController extends Controller
   public function store(Request $request)
   {
     $request->validate([
+      'wedding_id' => 'required',
       'nama_tamu.*' => 'required',
       'no_hp.*' => 'required',
       'undangan_dari.*' => 'required',
@@ -99,13 +100,14 @@ class ListUndanganController extends Controller
     ]);
 
     try {
-      DB::transaction(function () use ($request)
+      $weddingId = $request->wedding_id;
+      DB::transaction(function () use ($request, $weddingId)
       {
         foreach ($request->nama_tamu as $index => $nama)
         {
           list_undangan::create([
             'nama_tamu' => $nama,
-            'wedding_id' => $request->wedding_id[$index],
+            'wedding_id' => $weddingId,
             'phone' => $request->no_hp[$index],
             'tamu_dari' => $request->undangan_dari[$index],
             'id_groups' => $request->group_undangan[$index],
@@ -206,10 +208,112 @@ class ListUndanganController extends Controller
       return response()->json(['message' => 'Gak ada ID terpilih'], 400);
     }
 
-    // Lempar ke Job yang udah kita bikin tadi
-    \App\Jobs\SendWaJob::dispatch($ids);
+    try {
+      // 1. Ambil data lengkap: tamu + slug wedding + nama mempelai
+      $daftarTamu = list_undangan::join('weddings', 'tamu.wedding_id', '=', 'weddings.id')
+        ->whereIn('tamu.id_tamu', $ids)
+        ->select(
+            'tamu.id_tamu',
+            'tamu.nama_tamu',
+            'tamu.phone',
+            'weddings.slug',
+            'weddings.m_pria_panggilan',
+            'weddings.m_wanita_panggilan'
+        )
+        ->get();
 
-    return response()->json(['status' => 'success']);
+      if ($daftarTamu->isEmpty()) {
+        return response()->json(['message' => 'Data tamu tidak ditemukan'], 404);
+      }
+
+      // 2. Tarik credential aman langsung dari file .env
+      $wablasToken   = env('WABLAS_TOKEN');
+      $wablasSecret  = env('WABLAS_SECRET_KEY');
+      $tokenGabungan = $wablasToken . '.' . $wablasSecret;
+
+      // Ambil Base URL domain secara dinamis
+      $baseUrl = url('/');
+
+      // 3. Bungkus semua nomor dan pesan ke dalam array 'data' sesuai format bulk Wablas
+      $dataPesan = [];
+      foreach ($daftarTamu as $tamu) {
+
+        $nomorRaw = trim($tamu->phone); // Ambil nomor asli dari database
+
+        // Cek jika nomor diawali angka '0', potong angka 0 nya lalu ganti jadi '62'
+        if (strpos($nomorRaw, '0') === 0) {
+          $nomorWablas = '62' . substr($nomorRaw, 1);
+        } elseif (strpos($nomorRaw, '+62') === 0) {
+          $nomorWablas = substr($nomorRaw, 1);
+        } else {
+          $nomorWablas = $nomorRaw;
+        }
+
+        // Generate variabel link dan nama secara dinamis per tamu
+        $guestNameUrl  = rawurlencode($tamu->nama_tamu);
+        $guestNameText = $tamu->nama_tamu;
+
+        $weddingLink   = "{$baseUrl}/wedding/{$tamu->slug}/invitation/to/{$guestNameUrl}";
+        $weddingName   = "{$tamu->m_pria_panggilan} & {$tamu->m_wanita_panggilan}";
+
+        // Susun template pesan resmi (Rapat kiri mutlak biar rapi di WA)
+        $isiPesan = "Kepada Yth.\n" .
+"Bapak/Ibu/Saudara/i\n" .
+"*{$guestNameText}*\n" .
+"_______\n\n" .
+"Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i, teman sekaligus sahabat, untuk menghadiri acara pernikahan kami.\n\n" .
+"Berikut link undangan kami, untuk info lengkap dari acara, bisa kunjungi :\n\n" .
+"{$weddingLink}\n\n" .
+"Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.\n\n" .
+"Terima Kasih\n\n" .
+"Hormat kami,\n" .
+"{$weddingName}\n" .
+"________";
+
+        $dataPesan[] = [
+          'phone'   => $nomorWablas,
+          'message' => $isiPesan,
+        ];
+      }
+
+      // 4. Susun payload utama beserta Secret Key dari .env
+      $payload = [
+        'secret' => $wablasSecret,
+        'data'   => $dataPesan
+      ];
+
+      // 5. Eksekusi tembak ke Wablas
+      $response = \Http::withOptions([
+        'curl' => [
+          CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
+        ]
+      ])->withHeaders([
+        'Authorization' => $tokenGabungan,
+        'Content-Type'  => 'application/json',
+        'Accept'        => 'application/json'
+      ])->post('https://tegal.wablas.com/api/v2/send-message', $payload);
+
+      if ($response->successful()) {
+        return response()->json([
+          'status'  => 'success',
+          'message' => 'Bulk pesan berhasil didorong ke antrean Wablas.',
+          'detail'  => $response->json()
+        ], 200);
+      } else {
+        return response()->json([
+          'status'     => 'failed',
+          'message'    => 'Wablas menolak request bulk.',
+          'error_code' => $response->status(),
+          'detail'     => $response->json()
+        ], $response->status());
+      }
+    } catch (\Exception $e) {
+      return response()->json([
+        'status'  => 'error',
+        'message' => 'Terjadi kesalahan sistem saat memproses bulk send.',
+        'detail'  => $e->getMessage()
+      ], 500);
+    }
   }
 
   public function showInvitation($slug, $guest_name)
@@ -283,4 +387,5 @@ class ListUndanganController extends Controller
       return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
   }
+
 }

@@ -16,7 +16,7 @@ use App\Mail\NewReimbursementNotification;
 use App\Models\Reimbursement\ReimbursementEmployee;
 use App\Http\Controllers\TemplateController\Template as template_layout;
 use App\Http\Controllers\DigitalCardController\ListUndangan\ListUndanganController as list_undangan;
-
+use App\Http\Controllers\DigitalCardController\ListUndangan\WhatsappController as whatsapp;
 
 Route::get('/wedding-of/{slug}/invitation/to/{guest_name}', [list_undangan::class, 'showInvitation']);
 Route::post('/wedding-of/{slug}/invitation/to/{guest_name}', [list_undangan::class, 'storeUcapan'])->name('store.ucapan');
