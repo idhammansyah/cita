@@ -59,60 +59,6 @@
 
               <div class="col-md-6 border-end">
                 <div class="p-3">
-                  <h6 class="text-info fw-bold mb-3 border-bottom pb-2 text-center">
-                    <i class="bi bi-gender-male me-1"></i>Mempelai Pria
-                  </h6>
-
-                  <div class="text-center mb-4">
-                    <div class="position-relative d-inline-block">
-                      <img id="prev_pria" src="https://via.placeholder.com/150?text=Foto+Pria"
-                        class="rounded-circle shadow-sm border border-3 border-white"
-                        style="width: 130px; height: 130px; object-fit: cover; background: #f8f9fa;">
-
-                      <label for="foto_pria"
-                        class="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle shadow"
-                        title="Upload Foto">
-                        <i class="bi bi-camera-fill"></i>
-                      </label>
-                      <input type="file" id="foto_pria" name="foto_pria" class="d-none profile-preview-input"
-                        data-target="prev_pria" accept="image/jpeg, image/png">
-                    </div>
-                    <div class="small text-muted mt-2">Format: JPG/PNG, Maks: 2MB</div>
-                  </div>
-
-                  <div class="mb-3">
-                    <label class="form-label small fw-bold">Nama Lengkap & Gelar</label>
-                    <input type="text" id="m_pria" name="m_pria" class="form-control"
-                      placeholder="Contoh: Idham Mansyah, S.T." required>
-                  </div>
-
-                  <div class="row g-2 mb-3">
-                    <div class="col-sm-8">
-                      <label class="form-label small">Nama Panggilan</label>
-                      <input type="text" name="m_pria_panggilan" class="form-control" id="m_panggilan_pria"
-                        placeholder="Idham">
-                    </div>
-                    <div class="col-sm-4">
-                      <label class="form-label small">Anak Ke-</label>
-                      <input type="number" name="m_pria_anak_ke" class="form-control" placeholder="1" min="1">
-                    </div>
-                  </div>
-
-                  <div class="row g-2">
-                    <div class="col-6 mb-3">
-                      <label class="form-label small">Nama Ayah</label>
-                      <input type="text" name="m_pria_ayah" class="form-control" placeholder="Nama Bapak">
-                    </div>
-                    <div class="col-6 mb-3">
-                      <label class="form-label small">Nama Ibu</label>
-                      <input type="text" name="m_pria_ibu" class="form-control" placeholder="Nama Ibu">
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6 ps-md-4">
-                <div class="p-3">
                   <h6 class="text-danger fw-bold mb-3 border-bottom pb-2 text-center">
                     <i class="bi bi-gender-female me-1"></i>Mempelai Wanita
                   </h6>
@@ -160,6 +106,60 @@
                     <div class="col-6 mb-3">
                       <label class="form-label small">Nama Ibu</label>
                       <input type="text" name="m_wanita_ibu" class="form-control" placeholder="Nama Ibu">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 pe-md-4">
+                <div class="p-3">
+                  <h6 class="text-info fw-bold mb-3 border-bottom pb-2 text-center">
+                    <i class="bi bi-gender-male me-1"></i>Mempelai Pria
+                  </h6>
+
+                  <div class="text-center mb-4">
+                    <div class="position-relative d-inline-block">
+                      <img id="prev_pria" src="https://via.placeholder.com/150?text=Foto+Pria"
+                        class="rounded-circle shadow-sm border border-3 border-white"
+                        style="width: 130px; height: 130px; object-fit: cover; background: #f8f9fa;">
+
+                      <label for="foto_pria"
+                        class="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle shadow"
+                        title="Upload Foto">
+                        <i class="bi bi-camera-fill"></i>
+                      </label>
+                      <input type="file" id="foto_pria" name="foto_pria" class="d-none profile-preview-input"
+                        data-target="prev_pria" accept="image/jpeg, image/png">
+                    </div>
+                    <div class="small text-muted mt-2">Format: JPG/PNG, Maks: 2MB</div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Nama Lengkap & Gelar</label>
+                    <input type="text" id="m_pria" name="m_pria" class="form-control"
+                      placeholder="Contoh: Idham Mansyah, S.T." required>
+                  </div>
+
+                  <div class="row g-2 mb-3">
+                    <div class="col-sm-8">
+                      <label class="form-label small">Nama Panggilan</label>
+                      <input type="text" name="m_pria_panggilan" class="form-control" id="m_panggilan_pria"
+                        placeholder="Idham">
+                    </div>
+                    <div class="col-sm-4">
+                      <label class="form-label small">Anak Ke-</label>
+                      <input type="number" name="m_pria_anak_ke" class="form-control" placeholder="1" min="1">
+                    </div>
+                  </div>
+
+                  <div class="row g-2">
+                    <div class="col-6 mb-3">
+                      <label class="form-label small">Nama Ayah</label>
+                      <input type="text" name="m_pria_ayah" class="form-control" placeholder="Nama Bapak">
+                    </div>
+                    <div class="col-6 mb-3">
+                      <label class="form-label small">Nama Ibu</label>
+                      <input type="text" name="m_pria_ibu" class="form-control" placeholder="Nama Ibu">
                     </div>
                   </div>
                 </div>
@@ -303,7 +303,7 @@
 
     // --- AUTO SLUG ---
     function generateSlug() {
-      let combined = $('#m_panggilan_pria').val() + '-' + $('#m_panggilan_wanita').val();
+      let combined = $('#m_panggilan_wanita').val() + '-' + $('#m_panggilan_pria').val();
       let slugText = combined.toLowerCase()
         .replace(/[^a-z0-9 -]/g, '')
         .replace(/\s+/g, '-')

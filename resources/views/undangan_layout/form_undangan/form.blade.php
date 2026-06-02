@@ -96,7 +96,7 @@
                 <tr>
                   <td>{{ $index + 1 }}</td>
                   <td>
-                    <strong>{{ $item->m_pria_panggilan }} & {{ $item->m_wanita_panggilan }}</strong>
+                    <strong>{{ $item->m_wanita_panggilan }} & {{ $item->m_pria_panggilan }}</strong>
                     <br>
                     <small class="text-muted">{{ $item->slug }}</small>
                   </td>

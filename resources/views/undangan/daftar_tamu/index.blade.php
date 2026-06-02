@@ -274,7 +274,7 @@
       let guestNameUrl = encodeURIComponent(data.nama_tamu);
       let guestNameText = data.nama_tamu;
 
-      let weddingLink = `${baseUrl}/wedding/${data.slug}/invitation/to/${guestNameUrl}`;
+      let weddingLink = `${baseUrl}/wedding-of/${data.slug}/invitation/to/${guestNameUrl}`;
       let weddingName = `${data.m_pria_panggilan} & ${data.m_wanita_panggilan}`;
 
       // Susun pesan rapat kiri biar gak ada spasi liar di WA

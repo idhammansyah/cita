@@ -253,7 +253,7 @@ class ListUndanganController extends Controller
         $guestNameUrl  = rawurlencode($tamu->nama_tamu);
         $guestNameText = $tamu->nama_tamu;
 
-        $weddingLink   = "{$baseUrl}/wedding/{$tamu->slug}/invitation/to/{$guestNameUrl}";
+        $weddingLink   = "{$baseUrl}/wedding-of/{$tamu->slug}/invitation/to/{$guestNameUrl}";
         $weddingName   = "{$tamu->m_pria_panggilan} & {$tamu->m_wanita_panggilan}";
 
         // Susun template pesan resmi (Rapat kiri mutlak biar rapi di WA)
