@@ -49,9 +49,10 @@
       </div>
 
       <!-- KARTU UNDANGAN -->
-      <div class="letter text-center">
+      <div class="letter text-center d-flex flex-column align-items-center justify-content-center">
         <h3>Wedding Invitation</h3>
-        <h2>{{ $wedding->m_pria_panggilan }} & {{ $wedding->m_wanita_panggilan }}</h2>
+        <h2>{{ $wedding->m_wanita_panggilan }} & {{ $wedding->m_pria_panggilan }}</h2>
+        <img src="{{ asset('assets/img/assets_nikah/cincin_nobg.png') }}" class="img-fluid mx-auto d-block" style="height: 30px; object-fit: scale-down;">
       </div>
     </div>
   </section>
@@ -60,7 +61,7 @@
   <section id="invitation">
     <!-- HERO -->
     <div class="hero text-white text-center" id="hero">
-      <h1 data-aos="zoom-in">{{ $wedding->m_pria_panggilan }} & {{ $wedding->m_wanita_panggilan }}</h1>
+      <h1 data-aos="zoom-in">{{ $wedding->m_wanita_panggilan }} & {{ $wedding->m_pria_panggilan }}</h1>
       <p data-aos="fade-up">
         {{ \Carbon\Carbon::parse($wedding->tgl_akad)->translatedFormat('l, d F Y') }}
       </p>
@@ -73,7 +74,7 @@
           $dates = $start . '/' . $end;
 
           // Siapin teks buat judul kalender
-          $title = urlencode("The Wedding of " . $wedding->m_pria_panggilan . " & " . $wedding->m_wanita_panggilan);
+          $title = urlencode("The Wedding of " . $wedding->m_wanita_panggilan . " & " . $wedding->m_pria_panggilan);
         @endphp
 
         <a href="https://www.google.com/calendar/render?action=TEMPLATE&text={{ $title }}&dates={{ $dates }}&details=Mohon+doa+restunya+pada+acara+pernikahan+kami.&location=Lokasi+Acara"
@@ -104,25 +105,29 @@
         kami bermaksud menyelenggarakan pernikahan putra-putri kami.
       </p>
       <div class="row mt-5">
-        <div class="col-md-6" data-aos="fade-right">
-          <img src="{{ asset($wedding->foto_pria) }}" class="img-fluid rounded-circle mb-3" width="200"
-            style="height:200px; object-fit:cover;">
-          <h4>{{ $wedding->m_pria }}</h4>
-          <p>
-            Putra ke-{{ $wedding->m_pria_anak_ke }} dari<br>
-            Bapak {{ $wedding->m_pria_ayah }}<br>
-            & Ibu {{ $wedding->m_pria_ibu }}
-          </p>
-        </div>
-
-        <div class="col-md-6" data-aos="fade-left">
-          <img src="{{ asset($wedding->foto_wanita) }}" class="img-fluid rounded-circle mb-3" width="200"
-            style="height:200px; object-fit:cover;">
+        <div class="col-md-6 mb-4" data-aos="fade-right">
+          <div class="mempelai-frame-container mx-auto mb-1">
+            <img src="{{ asset('assets/img/assets_nikah/frames_no_bg.png') }}" class="frame-daun">
+            <img src="{{ asset($wedding->foto_wanita) }}" class="foto-mempelai">
+          </div>
           <h4>{{ $wedding->m_wanita }}</h4>
           <p>
             Putri ke-{{ $wedding->m_wanita_anak_ke }} dari<br>
             Bapak {{ $wedding->m_wanita_ayah }}<br>
             & Ibu {{ $wedding->m_wanita_ibu }}
+          </p>
+        </div>
+
+        <div class="col-md-6 mb-4" data-aos="fade-left">
+          <div class="mempelai-frame-container mx-auto mb-3">
+            <img src="{{ asset('assets/img/assets_nikah/frames_no_bg.png') }}" class="frame-daun">
+            <img src="{{ asset($wedding->foto_pria) }}" class="foto-mempelai">
+          </div>
+          <h4>{{ $wedding->m_pria }}</h4>
+          <p>
+            Putra ke-{{ $wedding->m_pria_anak_ke }} dari<br>
+            Bapak {{ $wedding->m_pria_ayah }}<br>
+            & Ibu {{ $wedding->m_pria_ibu }}
           </p>
         </div>
       </div>
@@ -139,6 +144,9 @@
 
     <!-- LOVE STORY (LOOPING DARI TABLE STORIES) -->
     <div class="container py-5" id="story">
+      <img src="{{ asset('assets/img/assets_nikah/burung1_nobg.png') }}" class="ornamen-burung burung-kiri" data-aos="fade-right">
+      <img src="{{ asset('assets/img/assets_nikah/burung2_nobg.png') }}" class="ornamen-burung burung-kanan" data-aos="fade-left">
+
       <h2 class="text-center mb-5">Love Story</h2>
       {{-- <div class="timeline">
 @foreach($wedding->stories as $index => $story)
@@ -151,7 +159,7 @@
     @endforeach
     </div> --}}
     @foreach($wedding->stories as $index => $story)
-      <p class="card-text text-muted text-center" style="line-height: 1.8; font-style: italic; font-size: 1.05rem;">
+      <p class="card-text text-muted text-center" style="line-height: 1.8; font-style: italic; font-size: 12pt;" data-aos="{{ $index % 2 == 0 ? 'fade-right' : 'fade-left' }}" data-aos-delay="100">
         "{{ $story->cerita }}"
       </p>
     @endforeach
@@ -160,30 +168,51 @@
     <!-- MOMEN BAHAGIA -->
     <div class="container py-5 text-center">
       <h2 data-aos="fade-up">Momen Bahagia</h2>
-      <div class="row mt-5">
-        <div class="col-md-6" data-aos="fade-right">
-          <h4>Akad Nikah</h4>
-          <p>
-            {{ \Carbon\Carbon::parse($wedding->tgl_akad)->translatedFormat('l, d F Y') }}<br>
-            {{ \Carbon\Carbon::parse($wedding->tgl_akad)->format('H:i') }} WIB
-          </p>
-        </div>
 
-        <div class="col-md-6" data-aos="fade-left">
-          <h4>Resepsi</h4>
-          <p>
-            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->translatedFormat('l, d F Y') }}<br>
-            {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->format('H:i') }}
-            WIB -
-            Selesai
-          </p>
+      <div class="row mt-5 position-relative align-items-center" style="min-height: 250px;">
+
+        <img src="{{ asset('assets/img/assets_nikah/bunga_nobg.png') }}" data-aos="fade-left" data-aos-delay="100"
+            style="position: absolute;
+                  left: 0px;
+                  top: 50%;
+                  transform: translateY(-50%);
+                  width: 50%;
+                  max-width: 150px;
+                  z-index: 1;">
+
+        <img src="{{ asset('assets/img/assets_nikah/amplop_no_bg.png') }}" data-aos="fade-right" data-aos-delay="100"
+            style="position: absolute;
+                  right: 0px;
+                  top: 50%;
+                  transform: translateY(-50%) rotate(-15deg);
+                  width: 50%;
+                  max-width: 150px;
+                  z-index: 1;">
+
+        <div class="col-12 px-5" style="position: relative; z-index: 2;">
+
+          <div class="mb-4" data-aos="fade-right">
+            <h4 style="font-size: 1.3rem; font-weight: 600;">Akad Nikah</h4>
+            <p class="mb-0 text-muted">
+              {{ \Carbon\Carbon::parse($wedding->tgl_akad)->translatedFormat('l, d F Y') }}<br>
+              {{ \Carbon\Carbon::parse($wedding->tgl_akad)->format('H:i') }} WIB
+            </p>
+          </div>
+
+          <div data-aos="fade-left">
+            <h4 style="font-size: 1.3rem; font-weight: 600;">Resepsi</h4>
+            <p class="mb-0 text-muted">
+              {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->translatedFormat('l, d F Y') }}<br>
+              {{ \Carbon\Carbon::parse($wedding->tgl_resepsi)->locale('id')->format('H:i') }} WIB - Selesai
+            </p>
+          </div>
+
         </div>
       </div>
 
       <div class="mt-5">
-        <h4>Menuju Hari Bahagia</h4>
-        <!-- Pass tanggal ke data-attribute untuk JS -->
-        <div id="countdown" class="countdown" data-time="{{ $wedding->tgl_akad }}"></div>
+        <h4 style="font-size: 1.2rem;">Menuju Hari Bahagia</h4>
+        <div id="countdown" class="countdown font-weight-bold" data-time="{{ $wedding->tgl_akad }}"></div>
       </div>
     </div>
 
@@ -196,7 +225,11 @@
         allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
       <div class="mt-4">
-        <a href="{{ $wedding->maps_url }}" target="_blank" class="btn btn-dark">
+        {{-- <a href="{{ $wedding->maps_url }}" target="_blank" class="btn btn-dark">
+          Buka Google Maps
+        </a> --}}
+        <a href="https://www.google.com/maps/search/?api=1&query=Jl.%20Raya%20Gereja%20Tugu%20No.78,%20Semper%20Barat,%20Cilincing,%20Jakarta%20Utara"
+            target="_blank" class="btn btn-dark">
           Buka Google Maps
         </a>
       </div>
@@ -208,8 +241,8 @@
 
       <div class="masonry-gallery">
         @foreach($wedding->galleries as $gallery)
-          <div class="gallery-card" data-aos="zoom-in">
-            <img src="{{ asset($gallery->image_path) }}" class="gallery-img">
+          <div class="gallery-card">
+            <img src="{{ asset($gallery->image_path) }}" class="gallery-img" data-aos="zoom-in">
           </div>
         @endforeach
       </div>

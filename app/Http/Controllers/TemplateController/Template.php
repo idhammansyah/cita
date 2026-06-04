@@ -191,9 +191,9 @@ class Template extends Controller
 
   public function update(Request $request, $id)
   {
-    // 1. Validasi (Saran: kecilkan max size foto wanita, itu terlalu besar)
+    // 1. Validasi
     $request->validate([
-      'slug' => 'required|unique:weddings,slug,' . $id,
+        'slug' => 'required|unique:weddings,slug,' . $id,
         'm_pria' => 'required',
         'm_wanita' => 'required',
         'foto_pria' => 'nullable|image|max:5048',
@@ -231,78 +231,100 @@ class Template extends Controller
         }
         $file = $request->file('foto_wanita');
         $fileName = time() . '_wanita.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/mempelai/photo_mempelai'), $fileName);
-            $data['foto_wanita'] = 'assets/mempelai/photo_mempelai/' . $fileName;
-        }
+        $file->move(public_path('assets/mempelai/photo_mempelai'), $fileName);
+        $data['foto_wanita'] = 'assets/mempelai/photo_mempelai/' . $fileName;
+      }
 
-        if ($request->hasFile('music_file')) {
-            if ($wedding->music_path && File::exists(public_path($wedding->music_path))) {
-                File::delete(public_path($wedding->music_path));
-            }
-            $file = $request->file('music_file');
-            $fileName = time() . '_music.' . $file->getClientOriginalExtension();
-            $file->move(public_path('assets/mempelai/music'), $fileName);
-            $data['music_path'] = 'assets/mempelai/music/' . $fileName;
-        }
+      if ($request->hasFile('music_file')) {
+          if ($wedding->music_path && File::exists(public_path($wedding->music_path))) {
+              File::delete(public_path($wedding->music_path));
+          }
+          $file = $request->file('music_file');
+          $fileName = time() . '_music.' . $file->getClientOriginalExtension();
+          $file->move(public_path('assets/mempelai/music'), $fileName);
+          $data['music_path'] = 'assets/mempelai/music/' . $fileName;
+      }
 
-        $wedding->update($data);
+      $wedding->update($data);
 
-        $existingStoryIds = $request->story_ids ?? []; // Pastikan di modal edit kamu tambahkan <input type="hidden" name="story_ids[]" value="${s.id}">
+      // --- PROTEKSI STORY UNDANGAN ---
+      $existingStoryIds = $request->story_ids ?? [];
 
-        // Set is_deleted = 1 untuk story yang TIDAK ADA di list input (artinya dihapus di UI)
-        StoryUndangan::where('weddings_id', $id)
-            ->whereNotIn('id', $existingStoryIds)
-            ->update(['is_deleted' => 1]);
+      // Filter untuk membuang string 'null' atau input kosong yang merusak query
+      $existingStoryIds = array_values(array_filter($existingStoryIds, function($value) {
+          return $value !== null && $value !== 'null' && $value !== '';
+      }));
 
-        if ($request->story_year) {
-            foreach ($request->story_year as $key => $year) {
-                $storyId = $request->story_ids[$key] ?? null;
+      // Set is_deleted = 1 untuk story yang tidak dipertahankan di UI
+      if (empty($existingStoryIds)) {
+          StoryUndangan::where('weddings_id', $id)->update(['is_deleted' => 1]);
+      } else {
+          StoryUndangan::where('weddings_id', $id)
+              ->whereNotIn('id', $existingStoryIds)
+              ->update(['is_deleted' => 1]);
+      }
 
-                $storyData = [
-                    'weddings_id' => $id,
-                    'year' => $year,
-                    'title_moment' => $request->story_title[$key],
-                    'cerita' => $request->story_description[$key],
-                    'is_deleted' => 0
-                ];
+      if ($request->story_year) {
+          foreach ($request->story_year as $key => $year) {
+              $storyId = $request->story_ids[$key] ?? null;
 
-                if ($storyId) {
-                    // Jika ada ID-nya, update data yang sudah ada
-                    StoryUndangan::where('id', $storyId)->update($storyData);
-                } else {
-                    // Jika tidak ada ID-nya, buat baru
-                    StoryUndangan::create($storyData);
-                }
-            }
-        }
+              // Amankan jika $storyId ternyata berisi string 'null' dari UI
+              if ($storyId === 'null' || $storyId === '') {
+                  $storyId = null;
+              }
 
-        // --- 4. LOGIKA UPDATE GALLERY (SOFT DELETE) ---
-        $existingGalleryIds = $request->existing_gallery_ids ?? []; // ID gallery yang masih dipertahankan di UI
+              $storyData = [
+                  'weddings_id' => $id,
+                  'year' => $year,
+                  'title_moment' => $request->story_title[$key],
+                  'cerita' => $request->story_description[$key],
+                  'is_deleted' => 0
+              ];
 
-        // Set is_deleted = 1 untuk gallery yang dihapus di UI
-        GalleryWedding::where('wedding_id', $id)
-            ->whereNotIn('id', $existingGalleryIds)
-            ->update(['is_deleted' => 1]);
+              if ($storyId) {
+                  StoryUndangan::where('id', $storyId)->update($storyData);
+              } else {
+                  StoryUndangan::create($storyData);
+              }
+          }
+      }
 
-        // Upload Gallery Baru
-        if ($request->hasFile('gallery_photos')) {
-            foreach ($request->file('gallery_photos') as $file) {
-                $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('assets/mempelai/galleries'), $fileName);
+      // --- PROTEKSI GALLERY (PERBAIKAN UTAMA ERROR) ---
+      $existingGalleryIds = $request->existing_gallery_ids ?? [];
 
-                GalleryWedding::create([
-                    'wedding_id' => $id,
-                    'image_path' => 'assets/mempelai/galleries/' . $fileName,
-                    'is_deleted' => 0
-                ]);
-            }
-        }
+      // Filter untuk membuang string 'null' agar MySQL tidak melempar error Truncated Integer
+      $existingGalleryIds = array_values(array_filter($existingGalleryIds, function($value) {
+          return $value !== null && $value !== 'null' && $value !== '';
+      }));
 
-        DB::commit();
-        return response()->json(['status' => 'success', 'message' => 'Undangan berhasil diperbarui!']);
+      // Set is_deleted = 1 untuk gallery yang dihapus di UI
+      if (empty($existingGalleryIds)) {
+          GalleryWedding::where('wedding_id', $id)->update(['is_deleted' => 1]);
+      } else {
+          GalleryWedding::where('wedding_id', $id)
+              ->whereNotIn('id', $existingGalleryIds)
+              ->update(['is_deleted' => 1]);
+      }
+
+      // Upload Gallery Baru
+      if ($request->hasFile('gallery_photos')) {
+          foreach ($request->file('gallery_photos') as $file) {
+              $fileName = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+              $file->move(public_path('assets/mempelai/galleries'), $fileName);
+
+              GalleryWedding::create([
+                  'wedding_id' => $id,
+                  'image_path' => 'assets/mempelai/galleries/' . $fileName,
+                  'is_deleted' => 0
+              ]);
+          }
+      }
+
+      DB::commit();
+      return response()->json(['status' => 'success', 'message' => 'Undangan berhasil diperbarui!']);
     } catch (\Exception $e) {
-        DB::rollback();
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+      DB::rollback();
+      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
   }
 }

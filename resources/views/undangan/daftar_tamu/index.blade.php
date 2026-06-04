@@ -185,7 +185,7 @@
             return `
               <div class="d-flex flex-wrap gap-1 justify-content-center">
                   <!-- Button View -->
-                  <a href="/wedding/${row.slug}/invitation/to/${encodeURIComponent(row.nama_tamu)}" target="_blank" class="btn btn-sm btn-outline-info" title="Lihat Undangan">
+                  <a href="/wedding-of/${row.slug}/invitation/to/${encodeURIComponent(row.nama_tamu)}" target="_blank" class="btn btn-sm btn-outline-info" title="Lihat Undangan">
                       <i class="bi bi-eye"></i>
                   </a>
 
