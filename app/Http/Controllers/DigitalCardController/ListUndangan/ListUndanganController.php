@@ -294,6 +294,7 @@ class ListUndanganController extends Controller
       ])->post('https://tegal.wablas.com/api/v2/send-message', $payload);
 
       if ($response->successful()) {
+        list_undangan::whereIn('id_tamu', $ids)->update(['is_sent' => 1]);
         return response()->json([
           'status'  => 'success',
           'message' => 'Bulk pesan berhasil didorong ke antrean Wablas.',
